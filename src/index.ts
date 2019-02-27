@@ -3,7 +3,7 @@ import { ParameterObject, SchemaObject } from 'openapi3-ts'
 
 import { WalkerState } from './interfaces'
 
-export default function flattenedParametersForSchema(
+export default function schemaToFlatParams(
   params: ParameterObject[],
 ): SchemaObject[] {
   let wsState = getDefaultState() as WalkerState
@@ -70,8 +70,8 @@ export default function flattenedParametersForSchema(
 
         currentDepth = state.depth
 
-        schema['x-flavor-settings'] = {
-          path: currentPath.substring(1),
+        schema['x-swagger-param-walker'] = {
+          paramPath: currentPath.substring(1),
         }
 
         flattenedParams.push(schema)
