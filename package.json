@@ -1,0 +1,25 @@
+{
+  "name": "swagger-param-walker",
+  "version": "0.0.1",
+  "description": "Parameter walker for Swagger 2.0 / OpenApi 3.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "repository": "git@github.com:philosophie/swagger-param-walker.git",
+  "author": "Ashwin Vaswani <ashwinv11@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "prettier-watch": "onchange '**/*' -e 'dist/**/*' -- prettier --write {{changed}}",
+    "start": "npx tsc -w",
+    "build": "npx tsc"
+  },
+  "devDependencies": {
+    "onchange": "^5.2.0",
+    "openapi3-ts": "^1.2.0",
+    "prettier": "^1.16.4",
+    "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "oas-schema-walker": "^1.1.2"
+  }
+}
