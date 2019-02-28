@@ -11,7 +11,8 @@
   "scripts": {
     "prettier-watch": "onchange '**/*' -e 'dist/**/*' -- prettier --write {{changed}}",
     "start": "npx tsc -w",
-    "build": "npx tsc"
+    "minify": "npx terser ./dist/index.js -o ./dist/index.min.js",
+    "build": "npx tsc && yarn minify"
   },
   "devDependencies": {
     "onchange": "^5.2.0",
