@@ -6,6 +6,6 @@
     "outDir": "./dist",
     "strict": true,
     "strictNullChecks": false,
-    "lib": ["esnext"]
+    "lib": ["esnext", "dom"]
   }
 }

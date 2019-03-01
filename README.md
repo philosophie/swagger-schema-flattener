@@ -2,18 +2,18 @@ Tiny package to help deal with parsing dereferenced Swagger 2.0 / OpenApi 3.0 pa
 
 ## Features:
 
-- `schemaToFlatParams`: Converts a parameter schema to an flattened array of valid parameter objects. Includes a stringified object path inside each param using the `x-swagger-param-walker` key.
+- `flattenParamSchema`: Converts a parameter schema to an flattened array of valid parameter objects. Includes a stringified object path inside each param using the `x-swagger-param-walker` key.
 
 ## Usage
 
 ```js
 import SwaggerParser from 'swagger-parser'
-import schemaToFlatParams from 'swagger-param-walker'
+import flattenParamSchema from 'swagger-param-walker'
 
 SwaggerParser.dereference('https://petstore.swagger.io/v2/swagger.json').then(spec => {
     const path = Object.entries(spec.paths)[0]
     const method = Object.entries(method)[0]
-    console.log(schemaToFlatParams(method.parameters))
+    console.log(flattenParamSchema(method.parameters))
 })
 ```
 
