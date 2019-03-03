@@ -6,4 +6,5 @@ export interface WalkerState {
   top: boolean
   combine: boolean
   allowRefSiblings: boolean
+  property?: string
 }
