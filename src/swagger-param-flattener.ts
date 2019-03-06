@@ -17,6 +17,10 @@ const buildNewKey = (oldKey: string, newProperty: string | undefined): string =>
  * @return {SchemaObject[]}
  */
 export function flattenParamSchema(params: ParameterObject[]): SchemaObject[] {
+  if (typeof params === 'undefined') {
+    return []
+  }
+
   let wsState = getDefaultState() as WalkerState
   wsState.combine = true
 
