@@ -1,4 +1,4 @@
-Tiny package to help deal with parsing dereferenced Swagger 2.0 / OpenApi 3.0 parameter objects into easier formats. Currently **only** tested with specs that are dereferenced by [`swagger-parser`](https://github.com/APIDevTools/swagger-parser).
+Tiny package to help deal with parsing dereferenced Swagger 2.0 parameter objects into easier formats. Currently **only** tested with specs that are dereferenced by [`swagger-parser`](https://github.com/APIDevTools/swagger-parser).
 
 ## Features:
 
@@ -29,3 +29,7 @@ SwaggerParser.dereference('https://petstore.swagger.io/v2/swagger.json').then(sp
 ##### `yarn prettier-watch`
 
 - Runs `prettier` in watch mode, which automatically formats your code.
+
+## TODO
+
+[ ] Support Openapi 3.0 spec (`requestBody`)
