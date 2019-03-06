@@ -1,8 +1,9 @@
 import superagent from 'superagent'
 import SwaggerParser from 'swagger-parser'
-import { ParameterObject, SchemaObject, OperationObject } from 'openapi3-ts'
+import { ParameterObject } from 'openapi3-ts'
 
 import { flattenParamSchema } from '../src/swagger-param-flattener'
+import at from 'lodash.at'
 
 const MAX_APIS_TO_TEST = 1500
 const START_AT_INDEX = 0
@@ -51,7 +52,11 @@ describe('flattenParamSchema', () => {
     it('Test ' + i, async () => {
       console.log(`${i}: ${realWorldAPIs[apiIndex].name} - v${realWorldAPIs[apiIndex].version}`)
       const flattenedParams = await flattenApi(realWorldAPIs[apiIndex++], 1)
-      expect(flattenedParams.length).toBeGreaterThanOrEqual(0)
+      if (flattenedParams.length > 0) {
+        flattenedParams.forEach((param: any) => {
+          expect(at(param, [param['x-swagger-param-flattener'].realPath])[0]).toBeDefined()
+        })
+      }
     })
   }
 })
@@ -65,14 +70,16 @@ function flattenApi(api: any, attemptNumber: number) {
 
   return SwaggerParser.dereference(api.swaggerYamlUrl)
     .then((spec: any) => {
-      if (Object.keys(spec.paths).length > 0) {
-        const firstPath = Object.entries(spec.paths)[0][1] as any
-        const method = Object.values(firstPath)[0] as any
-        return flattenParamSchema(method.parameters as ParameterObject[])
-      } else {
-        // Doesn't have any paths!
-        return null
+      if (spec.swagger && spec.swagger.indexOf('2') > -1) {
+        if (Object.keys(spec.paths).length > 0) {
+          const firstPath = Object.entries(spec.paths)[0][1] as any
+          const method = Object.values(firstPath)[0] as any
+          return flattenParamSchema(method.parameters as ParameterObject[])
+        }
       }
+      // Doesn't have any paths!
+      console.log('Skipping spec, not 2.0 or no paths to parse!')
+      return null
     })
     .catch((error: any) => {
       let knownError = findKnownApiError(api, error) as any
