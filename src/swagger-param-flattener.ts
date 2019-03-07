@@ -30,6 +30,7 @@ export function flattenParamSchema(params: ParameterObject[]): SchemaObject[] {
 
   params.map((param: ParameterObject, topLevelIndex: number) => {
     let currentDepth = 0
+    let topLevelProps = {} as SchemaObject
 
     walkSchema(
       param.schema,
@@ -38,6 +39,10 @@ export function flattenParamSchema(params: ParameterObject[]): SchemaObject[] {
       (schema: SchemaObject, parent: ParameterObject, state: WalkerState) => {
         // Top-level
         if (parent.schema === param.schema) {
+          // We need to merge other top level keys here
+          topLevelProps = Object.assign(topLevelProps, parent)
+          delete topLevelProps.schema
+
           realKey = `parameters[${topLevelIndex}].schema`
           displayKey = parent.name
         } else {
@@ -53,8 +58,14 @@ export function flattenParamSchema(params: ParameterObject[]): SchemaObject[] {
 
         schema['x-swagger-param-flattener'] = {
           realPath: newRealKey,
-          displayPath: newDisplayKey
+          displayPath: newDisplayKey,
+          isTopLevel: false
         } as SwaggerParamFlattenerExtension
+
+        if (Object.keys(topLevelProps).length > 0) {
+          schema['x-swagger-param-flattener'].topLevelProps = topLevelProps
+          schema['x-swagger-param-flattener'].isTopLevel = true
+        }
 
         currentDepth = state.depth
 
