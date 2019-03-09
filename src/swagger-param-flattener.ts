@@ -47,6 +47,9 @@ const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
         if (parent.schema === param.schema) {
           // We need to merge other top level keys here
           topLevelProps = cloneDeep(omit(parent, ['schema']))
+          if (!topLevelProps.example) {
+            topLevelProps.example = ''
+          }
 
           realKey = `parameters[${topLevelIndex}].schema`
           displayKey = parent.name
@@ -81,6 +84,10 @@ const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
           schema['x-swagger-param-flattener'].topLevelProps['x-swagger-param-flattener'] = {
             realPath: newRealKey.replace('.schema', '')
           }
+        }
+
+        if (!schema.example) {
+          schema.example = ''
         }
 
         currentDepth = state.depth
@@ -118,6 +125,9 @@ const getFlattenedSchemaFromRequestBody = (requestBody: RequestBodyObject, conte
       if (parent.content && parent.content[contentType].schema) {
         // We need to merge other top level keys here
         topLevelProps = cloneDeep(omit(parent, ['content']))
+        if (!topLevelProps.example) {
+          topLevelProps.example = ''
+        }
 
         realKey = `requestBody.content['${contentType}'].schema`
         displayKey = 'requestBody'
@@ -153,6 +163,10 @@ const getFlattenedSchemaFromRequestBody = (requestBody: RequestBodyObject, conte
         schema['x-swagger-param-flattener'].topLevelProps['x-swagger-param-flattener'] = {
           realPath: 'requestBody'
         }
+      }
+
+      if (!schema.example) {
+        schema.example = ''
       }
 
       currentDepth = state.depth
