@@ -2,7 +2,7 @@ import superagent from 'superagent'
 import SwaggerParser from 'swagger-parser'
 import { ParameterObject } from 'openapi3-ts'
 
-import { flattenParamSchema } from '../src/swagger-param-flattener'
+import { flattenParamSchema } from '../src/swagger-schema-flattener'
 import at from 'lodash.at'
 
 const MAX_APIS_TO_TEST = 1500
@@ -54,7 +54,7 @@ describe('flattenParamSchema', () => {
       const flattenedParams = await flattenApi(realWorldAPIs[apiIndex++], 1)
       if (flattenedParams.length > 0) {
         flattenedParams.forEach((param: any) => {
-          expect(at(param, [param['x-swagger-param-flattener'].realPath])[0]).toBeDefined()
+          expect(at(param, [param['x-swagger-schema-flattener'].realPath])[0]).toBeDefined()
         })
       }
     })

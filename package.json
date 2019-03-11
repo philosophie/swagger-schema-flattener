@@ -1,11 +1,11 @@
 {
-  "name": "swagger-param-flattener",
+  "name": "swagger-schema-flattener",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/swagger-param-flattener.umd.js",
-  "module": "dist/swagger-param-flattener.es5.js",
-  "typings": "dist/types/swagger-param-flattener.d.ts",
+  "main": "dist/swagger-schema-flattener.umd.js",
+  "module": "dist/swagger-schema-flattener.es5.js",
+  "typings": "dist/types/swagger-schema-flattener.d.ts",
   "files": [
     "dist"
   ],
