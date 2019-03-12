@@ -9,7 +9,7 @@ import {
 } from 'openapi3-ts'
 import { cloneDeep, omit } from 'lodash-es'
 
-import { SwaggerParamFlattenerExtension, WalkerState, CustomRequestBodyObject } from './interfaces'
+import { SwaggerSchemaFlattenerExtension, WalkerState, CustomRequestBodyObject } from './interfaces'
 
 // We get back undefined from oas-schema-walker, so need to deal with that
 const buildNewKey = (oldKey: string, newProperty: string | undefined): string => {
@@ -74,7 +74,7 @@ const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
           realPath: newRealKey,
           displayPath: newDisplayKey,
           isTopLevel: false
-        } as SwaggerParamFlattenerExtension
+        } as SwaggerSchemaFlattenerExtension
 
         // Add the required path on the actual param
         if (parent.required && Array.isArray(parent.required)) {
@@ -153,7 +153,7 @@ const getFlattenedSchemaFromRequestBody = (requestBody: RequestBodyObject, conte
         realPath: newRealKey,
         displayPath: newDisplayKey,
         isTopLevel: false
-      } as SwaggerParamFlattenerExtension
+      } as SwaggerSchemaFlattenerExtension
 
       // Add the required path on the actual param
       if (parent.required && Array.isArray(parent.required)) {
@@ -199,7 +199,8 @@ const getFlattenedSchemaFromResponses = (responses: ResponsesObject, contentType
 
   Object.keys(responses).map((responseKey: string, topLevelIndex: number) => {
     let currentDepth = 0
-    let topLevelProps = {} as ResponseObject
+    // This can't be ResponseObject due to type error when reseting
+    let topLevelProps = {} as any
 
     if (responses[responseKey].content) {
       walkSchema(
@@ -215,9 +216,10 @@ const getFlattenedSchemaFromResponses = (responses: ResponsesObject, contentType
               topLevelProps.example = ''
             }
 
-            realKey = `responses.${responseKey}.content['${contentType}'].schema`
+            realKey = `responses['${responseKey}'].content['${contentType}'].schema`
             displayKey = responseKey
           } else {
+            topLevelProps = {}
             realKey = parent['x-swagger-schema-flattener'].realPath
             displayKey = parent['x-swagger-schema-flattener'].displayPath
           }
@@ -231,14 +233,7 @@ const getFlattenedSchemaFromResponses = (responses: ResponsesObject, contentType
             realPath: newRealKey,
             displayPath: newDisplayKey,
             isTopLevel: false
-          } as SwaggerParamFlattenerExtension
-
-          // Add the required path on the actual param
-          if (parent.required && Array.isArray(parent.required)) {
-            if (parent.required.includes(getRawPropertyKey(state.property))) {
-              schema['x-swagger-schema-flattener'].required = true
-            }
-          }
+          } as SwaggerSchemaFlattenerExtension
 
           // Deal with top level
           if (Object.keys(topLevelProps).length > 0) {
@@ -260,6 +255,13 @@ const getFlattenedSchemaFromResponses = (responses: ResponsesObject, contentType
         }
       )
     } else {
+      const extension = {
+        isTopLevel: true,
+        displayPath: responseKey,
+        realPath: `responses['${responseKey}']`
+      } as SwaggerSchemaFlattenerExtension
+
+      responses[responseKey]['x-swagger-schema-flattener'] = extension
       flattenedResponses.push(responses[responseKey])
     }
   })
