@@ -3,7 +3,7 @@ export interface CustomRequestBodyObject extends ISpecificationExtension {
     description?: string;
     required?: boolean;
 }
-export interface SwaggerParamFlattenerExtension {
+export interface SwaggerSchemaFlattenerExtension {
     realPath: string;
     displayPath: string;
     isTopLevel: boolean;

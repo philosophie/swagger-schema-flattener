@@ -18176,6 +18176,7 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
     var displayKey = '';
     Object.keys(responses).map(function (responseKey, topLevelIndex) {
         var currentDepth = 0;
+        // This can't be ResponseObject due to type error when reseting
         var topLevelProps = {};
         if (responses[responseKey].content) {
             oasSchemaWalker_2(responses[responseKey].content[contentType].schema, responses[responseKey], wsState, function (schema, parent, state) {
@@ -18190,6 +18191,7 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
                     displayKey = responseKey;
                 }
                 else {
+                    topLevelProps = {};
                     realKey = parent['x-swagger-schema-flattener'].realPath;
                     displayKey = parent['x-swagger-schema-flattener'].displayPath;
                 }
@@ -18202,17 +18204,8 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
                     displayPath: newDisplayKey,
                     isTopLevel: false
                 };
-                // Add the required path on the actual param
-                if (parent.required && Array.isArray(parent.required)) {
-                    if (parent.required.includes(getRawPropertyKey(state.property))) {
-                        schema['x-swagger-schema-flattener'].required = true;
-                    }
-                }
                 // Deal with top level
                 if (Object.keys(topLevelProps).length > 0) {
-                    debugger;
-                    // schema['x-swagger-schema-flattener'].realPath = `responses['${responseKey}']`
-                    // schema['x-swagger-schema-flattener'].displayPath = responseKey
                     schema['x-swagger-schema-flattener'].topLevelProps = topLevelProps;
                     schema['x-swagger-schema-flattener'].isTopLevel = true;
                     // Copy the schema into the lower level
@@ -18228,10 +18221,12 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
             });
         }
         else {
-            responses[responseKey]['x-swagger-schema-flattener'] = {
-                displayKey: responseKey,
-                realKey: "responses['" + responseKey + "']"
+            var extension = {
+                isTopLevel: true,
+                displayPath: responseKey,
+                realPath: "responses['" + responseKey + "']"
             };
+            responses[responseKey]['x-swagger-schema-flattener'] = extension;
             flattenedResponses.push(responses[responseKey]);
         }
     });
