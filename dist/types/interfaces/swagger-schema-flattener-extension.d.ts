@@ -7,5 +7,6 @@ export interface SwaggerSchemaFlattenerExtension {
     realPath: string;
     displayPath: string;
     isTopLevel: boolean;
+    depth: number;
     topLevelProps?: ParameterObject;
 }

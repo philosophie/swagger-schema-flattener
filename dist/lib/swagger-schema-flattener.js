@@ -51,7 +51,8 @@ var getFlattenedSchemaFromParameters = function (params) {
             schema['x-swagger-schema-flattener'] = {
                 realPath: newRealKey,
                 displayPath: newDisplayKey,
-                isTopLevel: false
+                isTopLevel: false,
+                depth: state.depth
             };
             // Add the required path on the actual param
             if (parent.required && Array.isArray(parent.required)) {
@@ -109,7 +110,8 @@ var getFlattenedSchemaFromRequestBody = function (requestBody, contentType) {
         schema['x-swagger-schema-flattener'] = {
             realPath: newRealKey,
             displayPath: newDisplayKey,
-            isTopLevel: false
+            isTopLevel: false,
+            depth: state.depth
         };
         // Add the required path on the actual param
         if (parent.required && Array.isArray(parent.required)) {
@@ -168,7 +170,8 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
                 schema['x-swagger-schema-flattener'] = {
                     realPath: newRealKey,
                     displayPath: newDisplayKey,
-                    isTopLevel: false
+                    isTopLevel: false,
+                    depth: state.depth
                 };
                 // Deal with top level
                 if (Object.keys(topLevelProps).length > 0) {
@@ -190,7 +193,8 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
             var extension = {
                 isTopLevel: true,
                 displayPath: responseKey,
-                realPath: "responses['" + responseKey + "']"
+                realPath: "responses['" + responseKey + "']",
+                depth: 0
             };
             responses[responseKey]['x-swagger-schema-flattener'] = extension;
             flattenedResponses.push(responses[responseKey]);

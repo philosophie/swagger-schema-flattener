@@ -73,7 +73,8 @@ const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
         schema['x-swagger-schema-flattener'] = {
           realPath: newRealKey,
           displayPath: newDisplayKey,
-          isTopLevel: false
+          isTopLevel: false,
+          depth: state.depth
         } as SwaggerSchemaFlattenerExtension
 
         // Add the required path on the actual param
@@ -149,7 +150,8 @@ const getFlattenedSchemaFromRequestBody = (requestBody: RequestBodyObject, conte
       schema['x-swagger-schema-flattener'] = {
         realPath: newRealKey,
         displayPath: newDisplayKey,
-        isTopLevel: false
+        isTopLevel: false,
+        depth: state.depth
       } as SwaggerSchemaFlattenerExtension
 
       // Add the required path on the actual param
@@ -226,7 +228,8 @@ const getFlattenedSchemaFromResponses = (responses: ResponsesObject, contentType
           schema['x-swagger-schema-flattener'] = {
             realPath: newRealKey,
             displayPath: newDisplayKey,
-            isTopLevel: false
+            isTopLevel: false,
+            depth: state.depth
           } as SwaggerSchemaFlattenerExtension
 
           // Deal with top level
@@ -252,7 +255,8 @@ const getFlattenedSchemaFromResponses = (responses: ResponsesObject, contentType
       const extension = {
         isTopLevel: true,
         displayPath: responseKey,
-        realPath: `responses['${responseKey}']`
+        realPath: `responses['${responseKey}']`,
+        depth: 0
       } as SwaggerSchemaFlattenerExtension
 
       responses[responseKey]['x-swagger-schema-flattener'] = extension
