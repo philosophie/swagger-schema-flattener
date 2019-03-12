@@ -68,7 +68,7 @@ var getFlattenedSchemaFromParameters = function (params) {
                     realPath: newRealKey.replace('.schema', '')
                 };
             }
-            if (!schema.example) {
+            if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                 schema.example = '';
             }
             currentDepth = state.depth;
@@ -94,9 +94,6 @@ var getFlattenedSchemaFromRequestBody = function (requestBody, contentType) {
         if (parent.content && parent.content[contentType].schema) {
             // We need to merge other top level keys here
             topLevelProps = lodash_es_1.cloneDeep(lodash_es_1.omit(parent, ['content']));
-            if (!topLevelProps.example) {
-                topLevelProps.example = '';
-            }
             realKey = "requestBody.content['" + contentType + "'].schema";
             displayKey = 'requestBody';
         }
@@ -129,7 +126,7 @@ var getFlattenedSchemaFromRequestBody = function (requestBody, contentType) {
                 realPath: 'requestBody'
             };
         }
-        if (!schema.example) {
+        if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
             schema.example = '';
         }
         currentDepth = state.depth;
@@ -156,9 +153,6 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
                 if (parent.content && parent.content[contentType].schema) {
                     // We need to merge other top level keys here
                     topLevelProps = lodash_es_1.cloneDeep(lodash_es_1.omit(parent, ['content']));
-                    if (!topLevelProps.example) {
-                        topLevelProps.example = '';
-                    }
                     realKey = "responses['" + responseKey + "'].content['" + contentType + "'].schema";
                     displayKey = responseKey;
                 }
@@ -185,7 +179,7 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
                         realPath: newRealKey.replace('.schema', '')
                     };
                 }
-                if (!schema.example) {
+                if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                     schema.example = '';
                 }
                 currentDepth = state.depth;

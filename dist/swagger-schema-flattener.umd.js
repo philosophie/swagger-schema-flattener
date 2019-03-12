@@ -18102,7 +18102,7 @@
                         realPath: newRealKey.replace('.schema', '')
                     };
                 }
-                if (!schema.example) {
+                if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                     schema.example = '';
                 }
                 currentDepth = state.depth;
@@ -18128,9 +18128,6 @@
             if (parent.content && parent.content[contentType].schema) {
                 // We need to merge other top level keys here
                 topLevelProps = cloneDeep(omit(parent, ['content']));
-                if (!topLevelProps.example) {
-                    topLevelProps.example = '';
-                }
                 realKey = "requestBody.content['" + contentType + "'].schema";
                 displayKey = 'requestBody';
             }
@@ -18163,7 +18160,7 @@
                     realPath: 'requestBody'
                 };
             }
-            if (!schema.example) {
+            if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                 schema.example = '';
             }
             currentDepth = state.depth;
@@ -18190,9 +18187,6 @@
                     if (parent.content && parent.content[contentType].schema) {
                         // We need to merge other top level keys here
                         topLevelProps = cloneDeep(omit(parent, ['content']));
-                        if (!topLevelProps.example) {
-                            topLevelProps.example = '';
-                        }
                         realKey = "responses['" + responseKey + "'].content['" + contentType + "'].schema";
                         displayKey = responseKey;
                     }
@@ -18219,7 +18213,7 @@
                             realPath: newRealKey.replace('.schema', '')
                         };
                     }
-                    if (!schema.example) {
+                    if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                         schema.example = '';
                     }
                     currentDepth = state.depth;

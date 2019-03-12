@@ -93,7 +93,7 @@ const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
           }
         }
 
-        if (!schema.example) {
+        if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
           schema.example = ''
         }
 
@@ -132,9 +132,6 @@ const getFlattenedSchemaFromRequestBody = (requestBody: RequestBodyObject, conte
       if (parent.content && parent.content[contentType].schema) {
         // We need to merge other top level keys here
         topLevelProps = cloneDeep(omit(parent, ['content']))
-        if (!topLevelProps.example) {
-          topLevelProps.example = ''
-        }
 
         realKey = `requestBody.content['${contentType}'].schema`
         displayKey = 'requestBody'
@@ -172,7 +169,7 @@ const getFlattenedSchemaFromRequestBody = (requestBody: RequestBodyObject, conte
         }
       }
 
-      if (!schema.example) {
+      if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
         schema.example = ''
       }
 
@@ -212,9 +209,6 @@ const getFlattenedSchemaFromResponses = (responses: ResponsesObject, contentType
           if (parent.content && parent.content[contentType].schema) {
             // We need to merge other top level keys here
             topLevelProps = cloneDeep(omit(parent, ['content']))
-            if (!topLevelProps.example) {
-              topLevelProps.example = ''
-            }
 
             realKey = `responses['${responseKey}'].content['${contentType}'].schema`
             displayKey = responseKey
@@ -245,7 +239,7 @@ const getFlattenedSchemaFromResponses = (responses: ResponsesObject, contentType
             }
           }
 
-          if (!schema.example) {
+          if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
             schema.example = ''
           }
 
