@@ -4,6 +4,5 @@ export interface WalkerState {
     seen: WeakMap<SchemaObject, boolean>;
     top: boolean;
     combine: boolean;
-    allowRefSiblings: boolean;
     property?: string;
 }

@@ -1,4 +1,4 @@
-import { getDefaultState, walkSchema } from 'oas-schema-walker'
+import { getDefaultState, walkSchema } from './walker'
 import {
   OperationObject,
   ParameterObject,
@@ -7,7 +7,7 @@ import {
   ResponseObject,
   SchemaObject
 } from 'openapi3-ts'
-import { cloneDeep, omit } from 'lodash-es'
+import { cloneDeep, omit, set } from 'lodash-es'
 
 import { SwaggerSchemaFlattenerExtension, WalkerState, CustomRequestBodyObject } from './interfaces'
 
@@ -27,6 +27,11 @@ const getRawPropertyKey = (newPropertyKey: string | undefined) => {
   }
 
   return newPropertyKey.replace('properties/', '').replace('items/', '')
+}
+
+const flattenProperties = (schema: SchemaObject) => {
+  const flattenedSchema = { ...schema.properties, ...schema.items, ...schema }
+  return cloneDeep(omit(flattenedSchema, ['properties', 'items']))
 }
 
 const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
@@ -121,7 +126,6 @@ const getFlattenedSchemaFromRequestBody = (requestBody: RequestBodyObject, conte
   let realKey = ''
   let displayKey = ''
 
-  let currentDepth = 0
   let topLevelProps = {} as CustomRequestBodyObject
 
   walkSchema(
@@ -174,8 +178,6 @@ const getFlattenedSchemaFromRequestBody = (requestBody: RequestBodyObject, conte
       if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
         schema.example = ''
       }
-
-      currentDepth = state.depth
 
       flattenedParams.push(schema)
     }
@@ -267,6 +269,44 @@ const getFlattenedSchemaFromResponses = (responses: ResponsesObject, contentType
   return flattenedResponses
 }
 
+const getFormattedRequestBodySchema = (requestBody: RequestBodyObject, contentType: string) => {
+  if (typeof requestBody === 'undefined') {
+    return {}
+  }
+
+  let wsState = getDefaultState() as WalkerState
+  wsState.combine = true
+
+  const formattedRequestBody = { requestBody: null } as any
+  let displayKey = ''
+
+  walkSchema(
+    requestBody.content[contentType].schema,
+    requestBody,
+    wsState,
+    (schema: SchemaObject, parent: ParameterObject, state: WalkerState) => {
+      // Top-level
+      if (parent.content && parent.content[contentType].schema) {
+        displayKey = 'requestBody'
+        // set(formattedRequestBody, displayKey, flattenProperties(omit(parent, ['content'])))
+      } else {
+        displayKey = parent['x-swagger-schema-flattener'].displayPath
+      }
+
+      const newDisplayKey = buildNewKey(displayKey, state.property)
+        .replace('properties/', '')
+        .replace('items/', '')
+
+      schema['x-swagger-schema-flattener'] = {
+        displayPath: newDisplayKey
+      }
+
+      set(formattedRequestBody, displayKey, flattenProperties(schema))
+    }
+  )
+  return formattedRequestBody
+}
+
 /**
  * @description Converts the parameters object from dereferenced
  *              endpoint's method into a flattened array of params.
@@ -309,4 +349,20 @@ export function flattenResponseSchema(
   contentType: string = 'application/json'
 ) {
   return getFlattenedSchemaFromResponses(operation.responses as ResponsesObject, contentType)
+}
+
+/**
+ * @description Converts the responses object from dereferenced
+ *              endpoint's method into a flattened array of params.
+ *              Tracks each param's path in 'x-swagger-schema-flattener'.
+ *
+ * @param  {OperationObject[]} params - Operation object from de-refed spec
+ * @param  {contentType[]} params -  Current content type, defaults to application/json
+ * @return {SchemaObject[]}
+ */
+export function formatRequestBody(
+  operation: OperationObject,
+  contentType: string = 'application/json'
+) {
+  return getFormattedRequestBodySchema(operation.requestBody as RequestBodyObject, contentType)
 }

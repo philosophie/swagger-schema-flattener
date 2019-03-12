@@ -1,127 +1,28 @@
-/**
-* functions to walk an OpenAPI schema object and traverse all subschemas
-* calling a callback function on each one
-*/
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation. All rights reserved.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+this file except in compliance with the License. You may obtain a copy of the
+License at http://www.apache.org/licenses/LICENSE-2.0
 
-/**
-* obtains the default starting state for the `state` object used
-* by walkSchema
-* @return the state object suitable for use in walkSchema
-*/
-function getDefaultState() {
-    return { depth: 0, seen: new WeakMap(), top: true, combine: false, allowRefSiblings: false };
-}
+THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
+WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
+MERCHANTABLITY OR NON-INFRINGEMENT.
 
-/**
-* begins the walk of a schema object, or the `state` object used
-* by walkSchema
-* @param parent the parent schema, if any. Use empty object if none
-* @param state the initial starting state of the walker, usually obtained from `getDefaultState`
-* @param callback, a function taking a schema, parent and state to be called on this and all subschemas
-* @return the schema object
-*/
-function walkSchema(schema, parent, state, callback) {
+See the Apache Version 2.0 License for specific language governing permissions
+and limitations under the License.
+***************************************************************************** */
 
-    if (typeof state.depth === 'undefined') state = getDefaultState();
-    if ((schema === null) || (typeof schema === 'undefined')) return schema;
-    if (typeof schema.$ref !== 'undefined') {
-        let temp = {$ref:schema.$ref};
-        if (state.allowRefSiblings && schema.description) {
-            temp.description = schema.description;
+var __assign = function() {
+    __assign = Object.assign || function __assign(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
         }
-        callback(temp,parent,state);
-        return temp; // all other properties SHALL be ignored
-    }
-
-    if (state.combine) {
-        if (schema.allOf && Array.isArray(schema.allOf) && schema.allOf.length === 1) {
-            schema = Object.assign({},schema.allOf[0],schema);
-            delete schema.allOf;
-        }
-        if (schema.anyOf && Array.isArray(schema.anyOf) && schema.anyOf.length === 1) {
-            schema = Object.assign({},schema.anyOf[0],schema);
-            delete schema.anyOf;
-        }
-        if (schema.oneOf && Array.isArray(schema.oneOf) && schema.oneOf.length === 1) {
-            schema = Object.assign({},schema.oneOf[0],schema);
-            delete schema.oneOf;
-        }
-    }
-
-    callback(schema,parent,state);
-    if (state.seen.has(schema)) {
-        return schema;
-    }
-    //else
-    if ((typeof schema === 'object') && (schema !== null)) state.seen.set(schema,true);
-    state.top = false;
-    state.depth++;
-
-    if (typeof schema.items !== 'undefined') {
-        state.property = 'items';
-        walkSchema(schema.items,schema,state,callback);
-    }
-    if (schema.additionalItems) {
-        if (typeof schema.additionalItems === 'object') {
-            state.property = 'additionalItems';
-            walkSchema(schema.additionalItems,schema,state,callback);
-        }
-    }
-    if (schema.additionalProperties) {
-        if (typeof schema.additionalProperties === 'object') {
-            state.property = 'additionalProperties';
-            walkSchema(schema.additionalProperties,schema,state,callback);
-        }
-    }
-    if (schema.properties) {
-        for (let prop in schema.properties) {
-            let subSchema = schema.properties[prop];
-            state.property = 'properties/'+prop;
-            walkSchema(subSchema,schema,state,callback);
-        }
-    }
-    if (schema.patternProperties) {
-        for (let prop in schema.patternProperties) {
-            let subSchema = schema.patternProperties[prop];
-            state.property = 'patternProperties/'+prop;
-            walkSchema(subSchema,schema,state,callback);
-        }
-    }
-    if (schema.allOf) {
-        for (let index in schema.allOf) {
-            let subSchema = schema.allOf[index];
-            state.property = 'allOf/'+index;
-            walkSchema(subSchema,schema,state,callback);
-        }
-    }
-    if (schema.anyOf) {
-        for (let index in schema.anyOf) {
-            let subSchema = schema.anyOf[index];
-            state.property = 'anyOf/'+index;
-            walkSchema(subSchema,schema,state,callback);
-        }
-    }
-    if (schema.oneOf) {
-        for (let index in schema.oneOf) {
-            let subSchema = schema.oneOf[index];
-            state.property = 'oneOf/'+index;
-            walkSchema(subSchema,schema,state,callback);
-        }
-    }
-    if (schema.not) {
-        state.property = 'not';
-        walkSchema(schema.not,schema,state,callback);
-    }
-    state.depth--;
-    return schema;
-}
-
-var oasSchemaWalker = {
-    getDefaultState: getDefaultState,
-    walkSchema: walkSchema
+        return t;
+    };
+    return __assign.apply(this, arguments);
 };
-var oasSchemaWalker_1 = oasSchemaWalker.getDefaultState;
-var oasSchemaWalker_2 = oasSchemaWalker.walkSchema;
 
 /** Detect free variable `global` from Node.js. */
 var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
@@ -133,7 +34,7 @@ var freeSelf = typeof self == 'object' && self && self.Object === Object && self
 var root = freeGlobal || freeSelf || Function('return this')();
 
 /** Built-in value references. */
-var Symbol = root.Symbol;
+var Symbol$1 = root.Symbol;
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -149,7 +50,7 @@ var hasOwnProperty = objectProto.hasOwnProperty;
 var nativeObjectToString = objectProto.toString;
 
 /** Built-in value references. */
-var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
+var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : undefined;
 
 /**
  * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
@@ -203,7 +104,7 @@ var nullTag = '[object Null]',
     undefinedTag = '[object Undefined]';
 
 /** Built-in value references. */
-var symToStringTag$1 = Symbol ? Symbol.toStringTag : undefined;
+var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
 
 /**
  * The base implementation of `getTag` without fallbacks for buggy environments.
@@ -344,7 +245,7 @@ var isArray = Array.isArray;
 var INFINITY = 1 / 0;
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto = Symbol ? Symbol.prototype : undefined,
+var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined,
     symbolToString = symbolProto ? symbolProto.toString : undefined;
 
 /**
@@ -3691,7 +3592,7 @@ function arrayPush(array, values) {
 }
 
 /** Built-in value references. */
-var spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : undefined;
+var spreadableSymbol = Symbol$1 ? Symbol$1.isConcatSpreadable : undefined;
 
 /**
  * Checks if `value` is a flattenable `arguments` object or array.
@@ -5154,7 +5055,7 @@ function getAllKeysIn(object) {
 var DataView = getNative(root, 'DataView');
 
 /* Built-in method references that are verified to be native. */
-var Promise = getNative(root, 'Promise');
+var Promise$1 = getNative(root, 'Promise');
 
 /* Built-in method references that are verified to be native. */
 var Set = getNative(root, 'Set');
@@ -5171,7 +5072,7 @@ var dataViewTag$1 = '[object DataView]';
 /** Used to detect maps, sets, and weakmaps. */
 var dataViewCtorString = toSource(DataView),
     mapCtorString = toSource(Map),
-    promiseCtorString = toSource(Promise),
+    promiseCtorString = toSource(Promise$1),
     setCtorString = toSource(Set),
     weakMapCtorString = toSource(WeakMap$1);
 
@@ -5187,7 +5088,7 @@ var getTag = baseGetTag;
 // Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
 if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag$1) ||
     (Map && getTag(new Map) != mapTag$1) ||
-    (Promise && getTag(Promise.resolve()) != promiseTag) ||
+    (Promise$1 && getTag(Promise$1.resolve()) != promiseTag) ||
     (Set && getTag(new Set) != setTag$1) ||
     (WeakMap$1 && getTag(new WeakMap$1) != weakMapTag$1)) {
   getTag = function(value) {
@@ -5281,7 +5182,7 @@ function cloneRegExp(regexp) {
 }
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto$1 = Symbol ? Symbol.prototype : undefined,
+var symbolProto$1 = Symbol$1 ? Symbol$1.prototype : undefined,
     symbolValueOf = symbolProto$1 ? symbolProto$1.valueOf : undefined;
 
 /**
@@ -6061,7 +5962,7 @@ var arrayBufferTag$3 = '[object ArrayBuffer]',
     dataViewTag$4 = '[object DataView]';
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto$2 = Symbol ? Symbol.prototype : undefined,
+var symbolProto$2 = Symbol$1 ? Symbol$1.prototype : undefined,
     symbolValueOf$1 = symbolProto$2 ? symbolProto$2.valueOf : undefined;
 
 /**
@@ -11987,7 +11888,7 @@ var mapTag$8 = '[object Map]',
     setTag$8 = '[object Set]';
 
 /** Built-in value references. */
-var symIterator = Symbol ? Symbol.iterator : undefined;
+var symIterator = Symbol$1 ? Symbol$1.iterator : undefined;
 
 /**
  * Converts `value` to an array.
@@ -17446,7 +17347,7 @@ var arrayProto$5 = Array.prototype,
 var hasOwnProperty$n = objectProto$r.hasOwnProperty;
 
 /** Built-in value references. */
-var symIterator$1 = Symbol ? Symbol.iterator : undefined;
+var symIterator$1 = Symbol$1 ? Symbol$1.iterator : undefined;
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax$g = Math.max,
@@ -18030,6 +17931,119 @@ if (symIterator$1) {
  * Copyright Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
  */
 
+/**
+ * functions to walk an OpenAPI schema object and traverse all subschemas
+ * calling a callback function on each one
+ */
+/**
+ * obtains the default starting state for the `state` object used
+ * by walkSchema
+ * @return the state object suitable for use in walkSchema
+ */
+function getDefaultState() {
+    return {
+        depth: 0,
+        seen: new WeakMap(),
+        top: true,
+        combine: false
+    };
+}
+/**
+ * begins the walk of a schema object, or the `state` object used
+ * by walkSchema
+ * @param parent the parent schema, if any. Use empty object if none
+ * @param state the initial starting state of the walker, usually obtained from `getDefaultState`
+ * @param callback, a function taking a schema, parent and state to be called on this and all subschemas
+ * @return the schema object
+ */
+function walkSchema(schema, parent, state, callback) {
+    if (typeof state.depth === 'undefined')
+        state = getDefaultState();
+    if (schema === null || typeof schema === 'undefined')
+        return schema;
+    schema = cloneDeep(schema);
+    if (state.combine) {
+        if (schema.allOf && Array.isArray(schema.allOf) && schema.allOf.length === 1) {
+            schema = Object.assign({}, schema.allOf[0], schema);
+            delete schema.allOf;
+        }
+        if (schema.anyOf && Array.isArray(schema.anyOf) && schema.anyOf.length === 1) {
+            schema = Object.assign({}, schema.anyOf[0], schema);
+            delete schema.anyOf;
+        }
+        if (schema.oneOf && Array.isArray(schema.oneOf) && schema.oneOf.length === 1) {
+            schema = Object.assign({}, schema.oneOf[0], schema);
+            delete schema.oneOf;
+        }
+    }
+    callback(schema, parent, state);
+    if (state.seen.has(schema)) {
+        return schema;
+    }
+    //else
+    if (typeof schema === 'object' && schema !== null)
+        state.seen.set(schema, true);
+    state.top = false;
+    state.depth++;
+    if (typeof schema.items !== 'undefined') {
+        state.property = 'items';
+        walkSchema(schema.items, schema, state, callback);
+    }
+    if (schema.additionalItems) {
+        if (typeof schema.additionalItems === 'object') {
+            state.property = 'additionalItems';
+            walkSchema(schema.additionalItems, schema, state, callback);
+        }
+    }
+    if (schema.additionalProperties) {
+        if (typeof schema.additionalProperties === 'object') {
+            state.property = 'additionalProperties';
+            walkSchema(schema.additionalProperties, schema, state, callback);
+        }
+    }
+    if (schema.properties) {
+        for (var prop in schema.properties) {
+            var subSchema = schema.properties[prop];
+            state.property = 'properties/' + prop;
+            walkSchema(subSchema, schema, state, callback);
+        }
+    }
+    if (schema.patternProperties) {
+        for (var prop in schema.patternProperties) {
+            var subSchema = schema.patternProperties[prop];
+            state.property = 'patternProperties/' + prop;
+            walkSchema(subSchema, schema, state, callback);
+        }
+    }
+    if (schema.allOf) {
+        for (var index in schema.allOf) {
+            var subSchema = schema.allOf[index];
+            state.property = 'allOf/' + index;
+            walkSchema(subSchema, schema, state, callback);
+        }
+    }
+    if (schema.anyOf) {
+        for (var index in schema.anyOf) {
+            var subSchema = schema.anyOf[index];
+            state.property = 'anyOf/' + index;
+            walkSchema(subSchema, schema, state, callback);
+        }
+    }
+    if (schema.oneOf) {
+        for (var index in schema.oneOf) {
+            var subSchema = schema.oneOf[index];
+            state.property = 'oneOf/' + index;
+            walkSchema(subSchema, schema, state, callback);
+        }
+    }
+    if (schema.not) {
+        state.property = 'not';
+        walkSchema(schema.not, schema, state, callback);
+    }
+    state.depth--;
+    return schema;
+}
+
 // We get back undefined from oas-schema-walker, so need to deal with that
 var buildNewKey = function (oldKey, newProperty) {
     return (oldKey += typeof newProperty === 'undefined' ? '' : "." + newProperty);
@@ -18045,11 +18059,15 @@ var getRawPropertyKey = function (newPropertyKey) {
     }
     return newPropertyKey.replace('properties/', '').replace('items/', '');
 };
+var flattenProperties = function (schema) {
+    var flattenedSchema = __assign({}, schema.properties, schema.items, schema);
+    return cloneDeep(omit(flattenedSchema, ['properties', 'items']));
+};
 var getFlattenedSchemaFromParameters = function (params) {
     if (typeof params === 'undefined') {
         return [];
     }
-    var wsState = oasSchemaWalker_1();
+    var wsState = getDefaultState();
     wsState.combine = true;
     var flattenedParams = [];
     var realKey = '';
@@ -18057,7 +18075,7 @@ var getFlattenedSchemaFromParameters = function (params) {
     params.map(function (param, topLevelIndex) {
         var currentDepth = 0;
         var topLevelProps = {};
-        oasSchemaWalker_2(param.schema, param, wsState, function (schema, parent, state) {
+        walkSchema(param.schema, param, wsState, function (schema, parent, state) {
             // Top-level
             if (parent.schema === param.schema) {
                 // We need to merge other top level keys here
@@ -18111,14 +18129,13 @@ var getFlattenedSchemaFromRequestBody = function (requestBody, contentType) {
     if (typeof requestBody === 'undefined') {
         return [];
     }
-    var wsState = oasSchemaWalker_1();
+    var wsState = getDefaultState();
     wsState.combine = true;
     var flattenedParams = [];
     var realKey = '';
     var displayKey = '';
-    var currentDepth = 0;
     var topLevelProps = {};
-    oasSchemaWalker_2(requestBody.content[contentType].schema, requestBody, wsState, function (schema, parent, state) {
+    walkSchema(requestBody.content[contentType].schema, requestBody, wsState, function (schema, parent, state) {
         // Top-level
         if (parent.content && parent.content[contentType].schema) {
             // We need to merge other top level keys here
@@ -18159,7 +18176,6 @@ var getFlattenedSchemaFromRequestBody = function (requestBody, contentType) {
         if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
             schema.example = '';
         }
-        currentDepth = state.depth;
         flattenedParams.push(schema);
     });
     return flattenedParams;
@@ -18168,7 +18184,7 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
     if (typeof responses === 'undefined') {
         return [];
     }
-    var wsState = oasSchemaWalker_1();
+    var wsState = getDefaultState();
     wsState.combine = true;
     var flattenedResponses = [];
     var realKey = '';
@@ -18178,7 +18194,7 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
         // This can't be ResponseObject due to type error when reseting
         var topLevelProps = {};
         if (responses[responseKey].content) {
-            oasSchemaWalker_2(responses[responseKey].content[contentType].schema, responses[responseKey], wsState, function (schema, parent, state) {
+            walkSchema(responses[responseKey].content[contentType].schema, responses[responseKey], wsState, function (schema, parent, state) {
                 // Top-level
                 if (parent.content && parent.content[contentType].schema) {
                     // We need to merge other top level keys here
@@ -18230,6 +18246,33 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
     });
     return flattenedResponses;
 };
+var getFormattedRequestBodySchema = function (requestBody, contentType) {
+    if (typeof requestBody === 'undefined') {
+        return {};
+    }
+    var wsState = getDefaultState();
+    wsState.combine = true;
+    var formattedRequestBody = { requestBody: null };
+    var displayKey = '';
+    walkSchema(requestBody.content[contentType].schema, requestBody, wsState, function (schema, parent, state) {
+        // Top-level
+        if (parent.content && parent.content[contentType].schema) {
+            displayKey = 'requestBody';
+            // set(formattedRequestBody, displayKey, flattenProperties(omit(parent, ['content'])))
+        }
+        else {
+            displayKey = parent['x-swagger-schema-flattener'].displayPath;
+        }
+        var newDisplayKey = buildNewKey(displayKey, state.property)
+            .replace('properties/', '')
+            .replace('items/', '');
+        schema['x-swagger-schema-flattener'] = {
+            displayPath: newDisplayKey
+        };
+        set(formattedRequestBody, displayKey, flattenProperties(schema));
+    });
+    return formattedRequestBody;
+};
 /**
  * @description Converts the parameters object from dereferenced
  *              endpoint's method into a flattened array of params.
@@ -18267,6 +18310,19 @@ function flattenResponseSchema(operation, contentType) {
     if (contentType === void 0) { contentType = 'application/json'; }
     return getFlattenedSchemaFromResponses(operation.responses, contentType);
 }
+/**
+ * @description Converts the responses object from dereferenced
+ *              endpoint's method into a flattened array of params.
+ *              Tracks each param's path in 'x-swagger-schema-flattener'.
+ *
+ * @param  {OperationObject[]} params - Operation object from de-refed spec
+ * @param  {contentType[]} params -  Current content type, defaults to application/json
+ * @return {SchemaObject[]}
+ */
+function formatRequestBody(operation, contentType) {
+    if (contentType === void 0) { contentType = 'application/json'; }
+    return getFormattedRequestBodySchema(operation.requestBody, contentType);
+}
 
-export { flattenParamSchema, flattenRequestBodySchema, flattenResponseSchema };
+export { flattenParamSchema, flattenRequestBodySchema, flattenResponseSchema, formatRequestBody };
 //# sourceMappingURL=swagger-schema-flattener.es5.js.map
