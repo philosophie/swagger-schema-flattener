@@ -18050,12 +18050,6 @@ var getFlattenedSchemaFromParameters = function (params) {
             if (parent.schema === param.schema) {
                 // We need to merge other top level keys here
                 topLevelProps = cloneDeep(omit(parent, ['schema']));
-                if (!topLevelProps.example) {
-                    topLevelProps.example = '';
-                }
-                if (!topLevelProps.description) {
-                    topLevelProps.description = '';
-                }
                 realKey = "parameters[" + topLevelIndex + "].schema";
                 displayKey = parent.name;
             }
@@ -18087,12 +18081,6 @@ var getFlattenedSchemaFromParameters = function (params) {
                 schema['x-swagger-schema-flattener'].topLevelProps['x-swagger-schema-flattener'] = {
                     realPath: newRealKey.replace('.schema', '')
                 };
-            }
-            if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
-                schema.example = '';
-            }
-            if (!schema.description) {
-                schema.description = '';
             }
             flattenedParams.push(schema);
         });
@@ -18148,9 +18136,6 @@ var getFlattenedSchemaFromRequestBody = function (requestBody, contentType) {
                 realPath: 'requestBody'
             };
         }
-        if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
-            schema.example = '';
-        }
         flattenedParams.push(schema);
     });
     return flattenedParams;
@@ -18176,9 +18161,6 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
                     topLevelProps = cloneDeep(omit(parent, ['content']));
                     realKey = "responses['" + responseKey + "'].content['" + contentType + "'].schema";
                     displayKey = responseKey;
-                    if (!topLevelProps.description) {
-                        topLevelProps.description = '';
-                    }
                 }
                 else {
                     topLevelProps = {};
@@ -18203,12 +18185,6 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
                     schema['x-swagger-schema-flattener'].topLevelProps['x-swagger-schema-flattener'] = {
                         realPath: newRealKey.replace('.schema', '')
                     };
-                }
-                if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
-                    schema.example = '';
-                }
-                if (!schema.description) {
-                    schema.description = '';
                 }
                 currentDepth = state.depth;
                 flattenedResponses.push(schema);

@@ -48,13 +48,6 @@ export const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
         if (parent.schema === param.schema) {
           // We need to merge other top level keys here
           topLevelProps = cloneDeep(omit(parent, ['schema']))
-          if (!topLevelProps.example) {
-            topLevelProps.example = ''
-          }
-
-          if (!topLevelProps.description) {
-            topLevelProps.description = ''
-          }
 
           realKey = `parameters[${topLevelIndex}].schema`
           displayKey = parent.name
@@ -90,14 +83,6 @@ export const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
           schema['x-swagger-schema-flattener'].topLevelProps['x-swagger-schema-flattener'] = {
             realPath: newRealKey.replace('.schema', '')
           }
-        }
-
-        if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
-          schema.example = ''
-        }
-
-        if (!schema.description) {
-          schema.description = ''
         }
 
         flattenedParams.push(schema)
@@ -173,10 +158,6 @@ export const getFlattenedSchemaFromRequestBody = (
         }
       }
 
-      if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
-        schema.example = ''
-      }
-
       flattenedParams.push(schema)
     }
   )
@@ -217,10 +198,6 @@ export const getFlattenedSchemaFromResponses = (
 
             realKey = `responses['${responseKey}'].content['${contentType}'].schema`
             displayKey = responseKey
-
-            if (!topLevelProps.description) {
-              topLevelProps.description = ''
-            }
           } else {
             topLevelProps = {}
             realKey = parent['x-swagger-schema-flattener'].realPath
@@ -247,14 +224,6 @@ export const getFlattenedSchemaFromResponses = (
             schema['x-swagger-schema-flattener'].topLevelProps['x-swagger-schema-flattener'] = {
               realPath: newRealKey.replace('.schema', '')
             }
-          }
-
-          if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
-            schema.example = ''
-          }
-
-          if (!schema.description) {
-            schema.description = ''
           }
 
           currentDepth = state.depth
