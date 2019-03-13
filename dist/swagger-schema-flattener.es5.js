@@ -18232,7 +18232,12 @@ var getFormattedRequestBodySchema = function (requestBody, contentType) {
         schema['x-swagger-schema-flattener'] = {
             displayPath: newDisplayKey
         };
-        set(formattedRequestBody, newDisplayKey, minimalSchema(parent));
+        if (parent.content && parent.content[contentType].schema) {
+            set(formattedRequestBody, newDisplayKey, minimalSchema(parent));
+        }
+        else {
+            set(formattedRequestBody, newDisplayKey, minimalSchema(schema));
+        }
     });
     return formattedRequestBody;
 };
@@ -18259,7 +18264,12 @@ var getFormattedResponseSchema = function (responses, contentType) {
                 schema['x-swagger-schema-flattener'] = {
                     displayPath: newDisplayKey
                 };
-                set(formattedResponse, newDisplayKey, minimalSchema(schema));
+                if (parent.content && parent.content[contentType].schema) {
+                    set(formattedResponse, newDisplayKey, minimalSchema(parent));
+                }
+                else {
+                    set(formattedResponse, newDisplayKey, minimalSchema(schema));
+                }
             });
         }
         else {

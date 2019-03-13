@@ -54,7 +54,11 @@ export const getFormattedRequestBodySchema = (
         displayPath: newDisplayKey
       }
 
-      set(formattedRequestBody, newDisplayKey, minimalSchema(parent))
+      if (parent.content && parent.content[contentType].schema) {
+        set(formattedRequestBody, newDisplayKey, minimalSchema(parent))
+      } else {
+        set(formattedRequestBody, newDisplayKey, minimalSchema(schema))
+      }
     }
   )
   return formattedRequestBody
@@ -92,7 +96,11 @@ export const getFormattedResponseSchema = (responses: ResponsesObject, contentTy
             displayPath: newDisplayKey
           }
 
-          set(formattedResponse, newDisplayKey, minimalSchema(schema))
+          if (parent.content && parent.content[contentType].schema) {
+            set(formattedResponse, newDisplayKey, minimalSchema(parent))
+          } else {
+            set(formattedResponse, newDisplayKey, minimalSchema(schema))
+          }
         }
       )
     } else {

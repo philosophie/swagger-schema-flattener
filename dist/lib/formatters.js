@@ -31,7 +31,12 @@ exports.getFormattedRequestBodySchema = function (requestBody, contentType) {
         schema['x-swagger-schema-flattener'] = {
             displayPath: newDisplayKey
         };
-        lodash_es_1.set(formattedRequestBody, newDisplayKey, minimalSchema(parent));
+        if (parent.content && parent.content[contentType].schema) {
+            lodash_es_1.set(formattedRequestBody, newDisplayKey, minimalSchema(parent));
+        }
+        else {
+            lodash_es_1.set(formattedRequestBody, newDisplayKey, minimalSchema(schema));
+        }
     });
     return formattedRequestBody;
 };
@@ -58,7 +63,12 @@ exports.getFormattedResponseSchema = function (responses, contentType) {
                 schema['x-swagger-schema-flattener'] = {
                     displayPath: newDisplayKey
                 };
-                lodash_es_1.set(formattedResponse, newDisplayKey, minimalSchema(schema));
+                if (parent.content && parent.content[contentType].schema) {
+                    lodash_es_1.set(formattedResponse, newDisplayKey, minimalSchema(parent));
+                }
+                else {
+                    lodash_es_1.set(formattedResponse, newDisplayKey, minimalSchema(schema));
+                }
             });
         }
         else {
