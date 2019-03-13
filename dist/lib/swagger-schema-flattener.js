@@ -1,247 +1,7 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var walker_1 = require("./walker");
-var lodash_es_1 = require("lodash-es");
-// We get back undefined from oas-schema-walker, so need to deal with that
-var buildNewKey = function (oldKey, newProperty) {
-    return (oldKey += typeof newProperty === 'undefined' ? '' : "." + newProperty);
-};
-var buildRealKey = function (key, newProperty) {
-    return buildNewKey(key, newProperty)
-        .replace('properties/', 'properties.')
-        .replace('items/', 'items.');
-};
-var getRawPropertyKey = function (newPropertyKey) {
-    if (typeof newPropertyKey === 'undefined') {
-        return '';
-    }
-    return newPropertyKey.replace('properties/', '').replace('items/', '');
-};
-var flattenProperties = function (schema) {
-    var flattenedSchema = __assign({}, schema.properties, schema.items, schema);
-    return lodash_es_1.cloneDeep(lodash_es_1.omit(flattenedSchema, ['properties', 'items']));
-};
-var getFlattenedSchemaFromParameters = function (params) {
-    if (typeof params === 'undefined') {
-        return [];
-    }
-    var wsState = walker_1.getDefaultState();
-    wsState.combine = true;
-    var flattenedParams = [];
-    var realKey = '';
-    var displayKey = '';
-    params.map(function (param, topLevelIndex) {
-        var currentDepth = 0;
-        var topLevelProps = {};
-        walker_1.walkSchema(param.schema, param, wsState, function (schema, parent, state) {
-            // Top-level
-            if (parent.schema === param.schema) {
-                // We need to merge other top level keys here
-                topLevelProps = lodash_es_1.cloneDeep(lodash_es_1.omit(parent, ['schema']));
-                if (!topLevelProps.example) {
-                    topLevelProps.example = '';
-                }
-                realKey = "parameters[" + topLevelIndex + "].schema";
-                displayKey = parent.name;
-            }
-            else {
-                realKey = parent['x-swagger-schema-flattener'].realPath;
-                displayKey = parent['x-swagger-schema-flattener'].displayPath;
-            }
-            var newRealKey = buildRealKey(realKey, state.property);
-            var newDisplayKey = buildNewKey(displayKey, state.property)
-                .replace('properties/', '')
-                .replace('items/', '');
-            schema['x-swagger-schema-flattener'] = {
-                realPath: newRealKey,
-                displayPath: newDisplayKey,
-                isTopLevel: false,
-                depth: state.depth
-            };
-            // Add the required path on the actual param
-            if (parent.required && Array.isArray(parent.required)) {
-                if (parent.required.includes(getRawPropertyKey(state.property))) {
-                    schema['x-swagger-schema-flattener'].required = true;
-                }
-            }
-            // Deal with top level
-            if (Object.keys(topLevelProps).length > 0) {
-                schema['x-swagger-schema-flattener'].topLevelProps = topLevelProps;
-                schema['x-swagger-schema-flattener'].isTopLevel = true;
-                // Copy the schema into the lower level
-                schema['x-swagger-schema-flattener'].topLevelProps['x-swagger-schema-flattener'] = {
-                    realPath: newRealKey.replace('.schema', '')
-                };
-            }
-            if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
-                schema.example = '';
-            }
-            currentDepth = state.depth;
-            flattenedParams.push(schema);
-        });
-    });
-    return flattenedParams;
-};
-// Deal with OAS 3 spec
-var getFlattenedSchemaFromRequestBody = function (requestBody, contentType) {
-    if (typeof requestBody === 'undefined') {
-        return [];
-    }
-    var wsState = walker_1.getDefaultState();
-    wsState.combine = true;
-    var flattenedParams = [];
-    var realKey = '';
-    var displayKey = '';
-    var topLevelProps = {};
-    walker_1.walkSchema(requestBody.content[contentType].schema, requestBody, wsState, function (schema, parent, state) {
-        // Top-level
-        if (parent.content && parent.content[contentType].schema) {
-            // We need to merge other top level keys here
-            topLevelProps = lodash_es_1.cloneDeep(lodash_es_1.omit(parent, ['content']));
-            realKey = "requestBody.content['" + contentType + "'].schema";
-            displayKey = 'requestBody';
-        }
-        else {
-            topLevelProps = {};
-            realKey = parent['x-swagger-schema-flattener'].realPath;
-            displayKey = parent['x-swagger-schema-flattener'].displayPath;
-        }
-        var newRealKey = buildRealKey(realKey, state.property);
-        var newDisplayKey = buildNewKey(displayKey, state.property)
-            .replace('properties/', '')
-            .replace('items/', '');
-        schema['x-swagger-schema-flattener'] = {
-            realPath: newRealKey,
-            displayPath: newDisplayKey,
-            isTopLevel: false,
-            depth: state.depth
-        };
-        // Add the required path on the actual param
-        if (parent.required && Array.isArray(parent.required)) {
-            if (parent.required.includes(getRawPropertyKey(state.property))) {
-                schema['x-swagger-schema-flattener'].required = true;
-            }
-        }
-        // Deal with top level
-        if (Object.keys(topLevelProps).length > 0) {
-            schema['x-swagger-schema-flattener'].topLevelProps = topLevelProps;
-            schema['x-swagger-schema-flattener'].isTopLevel = true;
-            // Copy the schema into the lower level
-            schema['x-swagger-schema-flattener'].topLevelProps['x-swagger-schema-flattener'] = {
-                realPath: 'requestBody'
-            };
-        }
-        if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
-            schema.example = '';
-        }
-        flattenedParams.push(schema);
-    });
-    return flattenedParams;
-};
-var getFlattenedSchemaFromResponses = function (responses, contentType) {
-    if (typeof responses === 'undefined') {
-        return [];
-    }
-    var wsState = walker_1.getDefaultState();
-    wsState.combine = true;
-    var flattenedResponses = [];
-    var realKey = '';
-    var displayKey = '';
-    Object.keys(responses).map(function (responseKey, topLevelIndex) {
-        var currentDepth = 0;
-        // This can't be ResponseObject due to type error when reseting
-        var topLevelProps = {};
-        if (responses[responseKey].content) {
-            walker_1.walkSchema(responses[responseKey].content[contentType].schema, responses[responseKey], wsState, function (schema, parent, state) {
-                // Top-level
-                if (parent.content && parent.content[contentType].schema) {
-                    // We need to merge other top level keys here
-                    topLevelProps = lodash_es_1.cloneDeep(lodash_es_1.omit(parent, ['content']));
-                    realKey = "responses['" + responseKey + "'].content['" + contentType + "'].schema";
-                    displayKey = responseKey;
-                }
-                else {
-                    topLevelProps = {};
-                    realKey = parent['x-swagger-schema-flattener'].realPath;
-                    displayKey = parent['x-swagger-schema-flattener'].displayPath;
-                }
-                var newRealKey = buildRealKey(realKey, state.property);
-                var newDisplayKey = buildNewKey(displayKey, state.property)
-                    .replace('properties/', '')
-                    .replace('items/', '');
-                schema['x-swagger-schema-flattener'] = {
-                    realPath: newRealKey,
-                    displayPath: newDisplayKey,
-                    isTopLevel: false,
-                    depth: state.depth
-                };
-                // Deal with top level
-                if (Object.keys(topLevelProps).length > 0) {
-                    schema['x-swagger-schema-flattener'].topLevelProps = topLevelProps;
-                    schema['x-swagger-schema-flattener'].isTopLevel = true;
-                    // Copy the schema into the lower level
-                    schema['x-swagger-schema-flattener'].topLevelProps['x-swagger-schema-flattener'] = {
-                        realPath: newRealKey.replace('.schema', '')
-                    };
-                }
-                if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
-                    schema.example = '';
-                }
-                currentDepth = state.depth;
-                flattenedResponses.push(schema);
-            });
-        }
-        else {
-            var extension = {
-                isTopLevel: true,
-                displayPath: responseKey,
-                realPath: "responses['" + responseKey + "']",
-                depth: 0
-            };
-            responses[responseKey]['x-swagger-schema-flattener'] = extension;
-            flattenedResponses.push(responses[responseKey]);
-        }
-    });
-    return flattenedResponses;
-};
-var getFormattedRequestBodySchema = function (requestBody, contentType) {
-    if (typeof requestBody === 'undefined') {
-        return {};
-    }
-    var wsState = walker_1.getDefaultState();
-    wsState.combine = true;
-    var formattedRequestBody = { requestBody: null };
-    var displayKey = '';
-    walker_1.walkSchema(requestBody.content[contentType].schema, requestBody, wsState, function (schema, parent, state) {
-        // Top-level
-        if (parent.content && parent.content[contentType].schema) {
-            displayKey = 'requestBody';
-            // set(formattedRequestBody, displayKey, flattenProperties(omit(parent, ['content'])))
-        }
-        else {
-            displayKey = parent['x-swagger-schema-flattener'].displayPath;
-        }
-        var newDisplayKey = buildNewKey(displayKey, state.property)
-            .replace('properties/', '')
-            .replace('items/', '');
-        schema['x-swagger-schema-flattener'] = {
-            displayPath: newDisplayKey
-        };
-        lodash_es_1.set(formattedRequestBody, displayKey, flattenProperties(schema));
-    });
-    return formattedRequestBody;
-};
+var flatteners_1 = require("./flatteners");
+var formatters_1 = require("./formatters");
 /**
  * @description Converts the parameters object from dereferenced
  *              endpoint's method into a flattened array of params.
@@ -251,7 +11,7 @@ var getFormattedRequestBodySchema = function (requestBody, contentType) {
  * @return {SchemaObject[]}
  */
 function flattenParamSchema(operation) {
-    return getFlattenedSchemaFromParameters(operation.parameters);
+    return flatteners_1.getFlattenedSchemaFromParameters(operation.parameters);
 }
 exports.flattenParamSchema = flattenParamSchema;
 /**
@@ -265,7 +25,7 @@ exports.flattenParamSchema = flattenParamSchema;
  */
 function flattenRequestBodySchema(operation, contentType) {
     if (contentType === void 0) { contentType = 'application/json'; }
-    return getFlattenedSchemaFromRequestBody(operation.requestBody, contentType);
+    return flatteners_1.getFlattenedSchemaFromRequestBody(operation.requestBody, contentType);
 }
 exports.flattenRequestBodySchema = flattenRequestBodySchema;
 /**
@@ -279,13 +39,12 @@ exports.flattenRequestBodySchema = flattenRequestBodySchema;
  */
 function flattenResponseSchema(operation, contentType) {
     if (contentType === void 0) { contentType = 'application/json'; }
-    return getFlattenedSchemaFromResponses(operation.responses, contentType);
+    return flatteners_1.getFlattenedSchemaFromResponses(operation.responses, contentType);
 }
 exports.flattenResponseSchema = flattenResponseSchema;
 /**
- * @description Converts the responses object from dereferenced
- *              endpoint's method into a flattened array of params.
- *              Tracks each param's path in 'x-swagger-schema-flattener'.
+ * @description Converts a flattened Request Body object from dereferenced
+ *              endpoint's method into a formatted object of params.
  *
  * @param  {OperationObject[]} params - Operation object from de-refed spec
  * @param  {contentType[]} params -  Current content type, defaults to application/json
@@ -293,7 +52,20 @@ exports.flattenResponseSchema = flattenResponseSchema;
  */
 function formatRequestBody(operation, contentType) {
     if (contentType === void 0) { contentType = 'application/json'; }
-    return getFormattedRequestBodySchema(operation.requestBody, contentType);
+    return formatters_1.getFormattedRequestBodySchema(operation.requestBody, contentType);
 }
 exports.formatRequestBody = formatRequestBody;
+/**
+ * @description Converts a flattened Request Body object from dereferenced
+ *              endpoint's method into a formatted object of params.
+ *
+ * @param  {OperationObject[]} params - Operation object from de-refed spec
+ * @param  {contentType[]} params -  Current content type, defaults to application/json
+ * @return {SchemaObject[]}
+ */
+function formatResponses(operation, contentType) {
+    if (contentType === void 0) { contentType = 'application/json'; }
+    return formatters_1.getFormattedResponseSchema(operation.responses, contentType);
+}
+exports.formatResponses = formatResponses;
 //# sourceMappingURL=swagger-schema-flattener.js.map

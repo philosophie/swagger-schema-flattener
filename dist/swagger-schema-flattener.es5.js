@@ -1,29 +1,3 @@
-/*! *****************************************************************************
-Copyright (c) Microsoft Corporation. All rights reserved.
-Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-this file except in compliance with the License. You may obtain a copy of the
-License at http://www.apache.org/licenses/LICENSE-2.0
-
-THIS CODE IS PROVIDED ON AN *AS IS* BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-KIND, EITHER EXPRESS OR IMPLIED, INCLUDING WITHOUT LIMITATION ANY IMPLIED
-WARRANTIES OR CONDITIONS OF TITLE, FITNESS FOR A PARTICULAR PURPOSE,
-MERCHANTABLITY OR NON-INFRINGEMENT.
-
-See the Apache Version 2.0 License for specific language governing permissions
-and limitations under the License.
-***************************************************************************** */
-
-var __assign = function() {
-    __assign = Object.assign || function __assign(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
-
 /** Detect free variable `global` from Node.js. */
 var freeGlobal = typeof global == 'object' && global && global.Object === Object && global;
 
@@ -34,7 +8,7 @@ var freeSelf = typeof self == 'object' && self && self.Object === Object && self
 var root = freeGlobal || freeSelf || Function('return this')();
 
 /** Built-in value references. */
-var Symbol$1 = root.Symbol;
+var Symbol = root.Symbol;
 
 /** Used for built-in method references. */
 var objectProto = Object.prototype;
@@ -50,7 +24,7 @@ var hasOwnProperty = objectProto.hasOwnProperty;
 var nativeObjectToString = objectProto.toString;
 
 /** Built-in value references. */
-var symToStringTag = Symbol$1 ? Symbol$1.toStringTag : undefined;
+var symToStringTag = Symbol ? Symbol.toStringTag : undefined;
 
 /**
  * A specialized version of `baseGetTag` which ignores `Symbol.toStringTag` values.
@@ -104,7 +78,7 @@ var nullTag = '[object Null]',
     undefinedTag = '[object Undefined]';
 
 /** Built-in value references. */
-var symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : undefined;
+var symToStringTag$1 = Symbol ? Symbol.toStringTag : undefined;
 
 /**
  * The base implementation of `getTag` without fallbacks for buggy environments.
@@ -245,7 +219,7 @@ var isArray = Array.isArray;
 var INFINITY = 1 / 0;
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto = Symbol$1 ? Symbol$1.prototype : undefined,
+var symbolProto = Symbol ? Symbol.prototype : undefined,
     symbolToString = symbolProto ? symbolProto.toString : undefined;
 
 /**
@@ -3592,7 +3566,7 @@ function arrayPush(array, values) {
 }
 
 /** Built-in value references. */
-var spreadableSymbol = Symbol$1 ? Symbol$1.isConcatSpreadable : undefined;
+var spreadableSymbol = Symbol ? Symbol.isConcatSpreadable : undefined;
 
 /**
  * Checks if `value` is a flattenable `arguments` object or array.
@@ -5055,7 +5029,7 @@ function getAllKeysIn(object) {
 var DataView = getNative(root, 'DataView');
 
 /* Built-in method references that are verified to be native. */
-var Promise$1 = getNative(root, 'Promise');
+var Promise = getNative(root, 'Promise');
 
 /* Built-in method references that are verified to be native. */
 var Set = getNative(root, 'Set');
@@ -5072,7 +5046,7 @@ var dataViewTag$1 = '[object DataView]';
 /** Used to detect maps, sets, and weakmaps. */
 var dataViewCtorString = toSource(DataView),
     mapCtorString = toSource(Map),
-    promiseCtorString = toSource(Promise$1),
+    promiseCtorString = toSource(Promise),
     setCtorString = toSource(Set),
     weakMapCtorString = toSource(WeakMap$1);
 
@@ -5088,7 +5062,7 @@ var getTag = baseGetTag;
 // Fallback for data views, maps, sets, and weak maps in IE 11 and promises in Node.js < 6.
 if ((DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag$1) ||
     (Map && getTag(new Map) != mapTag$1) ||
-    (Promise$1 && getTag(Promise$1.resolve()) != promiseTag) ||
+    (Promise && getTag(Promise.resolve()) != promiseTag) ||
     (Set && getTag(new Set) != setTag$1) ||
     (WeakMap$1 && getTag(new WeakMap$1) != weakMapTag$1)) {
   getTag = function(value) {
@@ -5182,7 +5156,7 @@ function cloneRegExp(regexp) {
 }
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto$1 = Symbol$1 ? Symbol$1.prototype : undefined,
+var symbolProto$1 = Symbol ? Symbol.prototype : undefined,
     symbolValueOf = symbolProto$1 ? symbolProto$1.valueOf : undefined;
 
 /**
@@ -5962,7 +5936,7 @@ var arrayBufferTag$3 = '[object ArrayBuffer]',
     dataViewTag$4 = '[object DataView]';
 
 /** Used to convert symbols to primitives and strings. */
-var symbolProto$2 = Symbol$1 ? Symbol$1.prototype : undefined,
+var symbolProto$2 = Symbol ? Symbol.prototype : undefined,
     symbolValueOf$1 = symbolProto$2 ? symbolProto$2.valueOf : undefined;
 
 /**
@@ -11888,7 +11862,7 @@ var mapTag$8 = '[object Map]',
     setTag$8 = '[object Set]';
 
 /** Built-in value references. */
-var symIterator = Symbol$1 ? Symbol$1.iterator : undefined;
+var symIterator = Symbol ? Symbol.iterator : undefined;
 
 /**
  * Converts `value` to an array.
@@ -17347,7 +17321,7 @@ var arrayProto$5 = Array.prototype,
 var hasOwnProperty$n = objectProto$r.hasOwnProperty;
 
 /** Built-in value references. */
-var symIterator$1 = Symbol$1 ? Symbol$1.iterator : undefined;
+var symIterator$1 = Symbol ? Symbol.iterator : undefined;
 
 /* Built-in method references for those with the same name as other `lodash` methods. */
 var nativeMax$g = Math.max,
@@ -18059,10 +18033,6 @@ var getRawPropertyKey = function (newPropertyKey) {
     }
     return newPropertyKey.replace('properties/', '').replace('items/', '');
 };
-var flattenProperties = function (schema) {
-    var flattenedSchema = __assign({}, schema.properties, schema.items, schema);
-    return cloneDeep(omit(flattenedSchema, ['properties', 'items']));
-};
 var getFlattenedSchemaFromParameters = function (params) {
     if (typeof params === 'undefined') {
         return [];
@@ -18073,7 +18043,6 @@ var getFlattenedSchemaFromParameters = function (params) {
     var realKey = '';
     var displayKey = '';
     params.map(function (param, topLevelIndex) {
-        var currentDepth = 0;
         var topLevelProps = {};
         walkSchema(param.schema, param, wsState, function (schema, parent, state) {
             // Top-level
@@ -18118,7 +18087,6 @@ var getFlattenedSchemaFromParameters = function (params) {
             if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                 schema.example = '';
             }
-            currentDepth = state.depth;
             flattenedParams.push(schema);
         });
     });
@@ -18246,6 +18214,14 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
     });
     return flattenedResponses;
 };
+
+var minimalSchema = function (schema) {
+    var newSchema = omit(schema, ['properties', 'items', 'content', 'x-swagger-schema-flattener']);
+    if (newSchema.enum) {
+        newSchema.enum = newSchema.enum.join(', ');
+    }
+    return newSchema;
+};
 var getFormattedRequestBodySchema = function (requestBody, contentType) {
     if (typeof requestBody === 'undefined') {
         return {};
@@ -18253,26 +18229,41 @@ var getFormattedRequestBodySchema = function (requestBody, contentType) {
     var wsState = getDefaultState();
     wsState.combine = true;
     var formattedRequestBody = { requestBody: null };
-    var displayKey = '';
     walkSchema(requestBody.content[contentType].schema, requestBody, wsState, function (schema, parent, state) {
-        // Top-level
         if (parent.content && parent.content[contentType].schema) {
-            displayKey = 'requestBody';
-            // set(formattedRequestBody, displayKey, flattenProperties(omit(parent, ['content'])))
+            set(formattedRequestBody, 'requestBody', minimalSchema(parent));
         }
         else {
-            displayKey = parent['x-swagger-schema-flattener'].displayPath;
+            set(formattedRequestBody, schema['x-swagger-schema-flattener'].displayPath, minimalSchema(schema));
         }
-        var newDisplayKey = buildNewKey(displayKey, state.property)
-            .replace('properties/', '')
-            .replace('items/', '');
-        schema['x-swagger-schema-flattener'] = {
-            displayPath: newDisplayKey
-        };
-        set(formattedRequestBody, displayKey, flattenProperties(schema));
     });
     return formattedRequestBody;
 };
+var getFormattedResponseSchema = function (responses, contentType) {
+    if (typeof responses === 'undefined') {
+        return {};
+    }
+    var wsState = getDefaultState();
+    wsState.combine = true;
+    return Object.keys(responses).map(function (responseKey) {
+        var formattedResponse = {};
+        if (responses[responseKey].content) {
+            walkSchema(responses[responseKey].content[contentType].schema, responses[responseKey], wsState, function (schema, parent, state) {
+                if (parent.content && parent.content[contentType].schema) {
+                    set(formattedResponse, responseKey, minimalSchema(parent));
+                }
+                else {
+                    set(formattedResponse, schema['x-swagger-schema-flattener'].displayPath, minimalSchema(schema));
+                }
+            });
+        }
+        else {
+            set(formattedResponse, responseKey, minimalSchema(responses[responseKey]));
+        }
+        return formattedResponse;
+    });
+};
+
 /**
  * @description Converts the parameters object from dereferenced
  *              endpoint's method into a flattened array of params.
@@ -18311,9 +18302,8 @@ function flattenResponseSchema(operation, contentType) {
     return getFlattenedSchemaFromResponses(operation.responses, contentType);
 }
 /**
- * @description Converts the responses object from dereferenced
- *              endpoint's method into a flattened array of params.
- *              Tracks each param's path in 'x-swagger-schema-flattener'.
+ * @description Converts a flattened Request Body object from dereferenced
+ *              endpoint's method into a formatted object of params.
  *
  * @param  {OperationObject[]} params - Operation object from de-refed spec
  * @param  {contentType[]} params -  Current content type, defaults to application/json
@@ -18323,6 +18313,18 @@ function formatRequestBody(operation, contentType) {
     if (contentType === void 0) { contentType = 'application/json'; }
     return getFormattedRequestBodySchema(operation.requestBody, contentType);
 }
+/**
+ * @description Converts a flattened Request Body object from dereferenced
+ *              endpoint's method into a formatted object of params.
+ *
+ * @param  {OperationObject[]} params - Operation object from de-refed spec
+ * @param  {contentType[]} params -  Current content type, defaults to application/json
+ * @return {SchemaObject[]}
+ */
+function formatResponses(operation, contentType) {
+    if (contentType === void 0) { contentType = 'application/json'; }
+    return getFormattedResponseSchema(operation.responses, contentType);
+}
 
-export { flattenParamSchema, flattenRequestBodySchema, flattenResponseSchema, formatRequestBody };
+export { flattenParamSchema, flattenRequestBodySchema, flattenResponseSchema, formatRequestBody, formatResponses };
 //# sourceMappingURL=swagger-schema-flattener.es5.js.map
