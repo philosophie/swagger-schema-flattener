@@ -21,17 +21,17 @@ exports.getFormattedRequestBodySchema = function (requestBody, contentType) {
     walker_1.walkSchema(requestBody.content[contentType].schema, requestBody, wsState, function (schema, parent, state) {
         if (parent.content && parent.content[contentType].schema) {
             displayKey = 'requestBody';
-            lodash_es_1.set(formattedRequestBody, displayKey, minimalSchema(parent));
         }
         else {
-            var newDisplayKey = utils_1.buildNewKey(displayKey, state.property)
-                .replace('properties/', '')
-                .replace('items/', '');
-            schema['x-swagger-schema-flattener'] = {
-                displayPath: newDisplayKey
-            };
-            lodash_es_1.set(formattedRequestBody, schema['x-swagger-schema-flattener'].displayPath, minimalSchema(schema));
+            displayKey = parent['x-swagger-schema-flattener'].displayPath;
         }
+        var newDisplayKey = utils_1.buildNewKey(displayKey, state.property)
+            .replace('properties/', '')
+            .replace('items/', '');
+        schema['x-swagger-schema-flattener'] = {
+            displayPath: newDisplayKey
+        };
+        lodash_es_1.set(formattedRequestBody, newDisplayKey, minimalSchema(parent));
     });
     return formattedRequestBody;
 };
@@ -48,17 +48,17 @@ exports.getFormattedResponseSchema = function (responses, contentType) {
             walker_1.walkSchema(responses[responseKey].content[contentType].schema, responses[responseKey], wsState, function (schema, parent, state) {
                 if (parent.content && parent.content[contentType].schema) {
                     displayKey = responseKey;
-                    lodash_es_1.set(formattedResponse, displayKey, minimalSchema(parent));
                 }
                 else {
-                    var newDisplayKey = utils_1.buildNewKey(displayKey, state.property)
-                        .replace('properties/', '')
-                        .replace('items/', '');
-                    schema['x-swagger-schema-flattener'] = {
-                        displayPath: newDisplayKey
-                    };
-                    lodash_es_1.set(formattedResponse, schema['x-swagger-schema-flattener'].displayPath, minimalSchema(schema));
+                    displayKey = parent['x-swagger-schema-flattener'].displayPath;
                 }
+                var newDisplayKey = utils_1.buildNewKey(displayKey, state.property)
+                    .replace('properties/', '')
+                    .replace('items/', '');
+                schema['x-swagger-schema-flattener'] = {
+                    displayPath: newDisplayKey
+                };
+                lodash_es_1.set(formattedResponse, newDisplayKey, minimalSchema(schema));
             });
         }
         else {

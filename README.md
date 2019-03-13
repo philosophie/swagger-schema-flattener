@@ -23,11 +23,11 @@ SwaggerParser.dereference('https://petstore.swagger.io/v2/swagger.json').then(sp
 
 1. Node 9.8.0
 
-##### `yarn start`
+##### `npm run start`
 
 - Runs `tsc` in watch mode, picking up new changes.
 
-##### `yarn prettier-watch`
+##### `npm run prettier-watch`
 
 - Runs `prettier` in watch mode, which automatically formats your code.
 
