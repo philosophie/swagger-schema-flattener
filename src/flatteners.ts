@@ -9,11 +9,7 @@ import {
 import { cloneDeep, omit } from 'lodash-es'
 
 import { SwaggerSchemaFlattenerExtension, WalkerState, CustomRequestBodyObject } from './interfaces'
-
-// We get back undefined from oas-schema-walker, so need to deal with that
-const buildNewKey = (oldKey: string, newProperty: string | undefined): string => {
-  return (oldKey += typeof newProperty === 'undefined' ? '' : `.${newProperty}`)
-}
+import { buildNewKey } from './utils'
 
 const buildRealKey = (key: string, newProperty: string | undefined) =>
   buildNewKey(key, newProperty)
@@ -56,6 +52,10 @@ export const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
             topLevelProps.example = ''
           }
 
+          if (!topLevelProps.description) {
+            topLevelProps.description = ''
+          }
+
           realKey = `parameters[${topLevelIndex}].schema`
           displayKey = parent.name
         } else {
@@ -94,6 +94,10 @@ export const getFlattenedSchemaFromParameters = (params: ParameterObject[]) => {
 
         if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
           schema.example = ''
+        }
+
+        if (!schema.description) {
+          schema.description = ''
         }
 
         flattenedParams.push(schema)
@@ -213,6 +217,10 @@ export const getFlattenedSchemaFromResponses = (
 
             realKey = `responses['${responseKey}'].content['${contentType}'].schema`
             displayKey = responseKey
+
+            if (!topLevelProps.description) {
+              topLevelProps.description = ''
+            }
           } else {
             topLevelProps = {}
             realKey = parent['x-swagger-schema-flattener'].realPath
@@ -243,6 +251,10 @@ export const getFlattenedSchemaFromResponses = (
 
           if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
             schema.example = ''
+          }
+
+          if (!schema.description) {
+            schema.description = ''
           }
 
           currentDepth = state.depth

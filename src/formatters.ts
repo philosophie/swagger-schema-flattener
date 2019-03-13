@@ -9,6 +9,7 @@ import {
 import { set, omit } from 'lodash-es'
 
 import { WalkerState } from './interfaces'
+import { buildNewKey } from './utils'
 
 const minimalSchema = (schema: SchemaObject | ParameterObject) => {
   const newSchema = omit(schema, ['properties', 'items', 'content', 'x-swagger-schema-flattener'])
@@ -32,6 +33,7 @@ export const getFormattedRequestBodySchema = (
   wsState.combine = true
 
   const formattedRequestBody = { requestBody: null } as any
+  let displayKey = ''
 
   walkSchema(
     requestBody.content[contentType].schema,
@@ -39,8 +41,17 @@ export const getFormattedRequestBodySchema = (
     wsState,
     (schema: SchemaObject, parent: ParameterObject, state: WalkerState) => {
       if (parent.content && parent.content[contentType].schema) {
-        set(formattedRequestBody, 'requestBody', minimalSchema(parent))
+        displayKey = 'requestBody'
+        set(formattedRequestBody, displayKey, minimalSchema(parent))
       } else {
+        const newDisplayKey = buildNewKey(displayKey, state.property)
+          .replace('properties/', '')
+          .replace('items/', '')
+
+        schema['x-swagger-schema-flattener'] = {
+          displayPath: newDisplayKey
+        }
+
         set(
           formattedRequestBody,
           schema['x-swagger-schema-flattener'].displayPath,
@@ -62,6 +73,7 @@ export const getFormattedResponseSchema = (responses: ResponsesObject, contentTy
 
   return Object.keys(responses).map((responseKey: string) => {
     const formattedResponse = {} as any
+    let displayKey = ''
 
     if (responses[responseKey].content) {
       walkSchema(
@@ -70,8 +82,16 @@ export const getFormattedResponseSchema = (responses: ResponsesObject, contentTy
         wsState,
         (schema: SchemaObject, parent: ResponseObject, state: WalkerState) => {
           if (parent.content && parent.content[contentType].schema) {
-            set(formattedResponse, responseKey, minimalSchema(parent))
+            displayKey = responseKey
+            set(formattedResponse, displayKey, minimalSchema(parent))
           } else {
+            const newDisplayKey = buildNewKey(displayKey, state.property)
+              .replace('properties/', '')
+              .replace('items/', '')
+
+            schema['x-swagger-schema-flattener'] = {
+              displayPath: newDisplayKey
+            }
             set(
               formattedResponse,
               schema['x-swagger-schema-flattener'].displayPath,

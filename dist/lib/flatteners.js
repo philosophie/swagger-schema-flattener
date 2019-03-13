@@ -2,12 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var walker_1 = require("./walker");
 var lodash_es_1 = require("lodash-es");
-// We get back undefined from oas-schema-walker, so need to deal with that
-var buildNewKey = function (oldKey, newProperty) {
-    return (oldKey += typeof newProperty === 'undefined' ? '' : "." + newProperty);
-};
+var utils_1 = require("./utils");
 var buildRealKey = function (key, newProperty) {
-    return buildNewKey(key, newProperty)
+    return utils_1.buildNewKey(key, newProperty)
         .replace('properties/', 'properties.')
         .replace('items/', 'items.');
 };
@@ -36,6 +33,9 @@ exports.getFlattenedSchemaFromParameters = function (params) {
                 if (!topLevelProps.example) {
                     topLevelProps.example = '';
                 }
+                if (!topLevelProps.description) {
+                    topLevelProps.description = '';
+                }
                 realKey = "parameters[" + topLevelIndex + "].schema";
                 displayKey = parent.name;
             }
@@ -44,7 +44,7 @@ exports.getFlattenedSchemaFromParameters = function (params) {
                 displayKey = parent['x-swagger-schema-flattener'].displayPath;
             }
             var newRealKey = buildRealKey(realKey, state.property);
-            var newDisplayKey = buildNewKey(displayKey, state.property)
+            var newDisplayKey = utils_1.buildNewKey(displayKey, state.property)
                 .replace('properties/', '')
                 .replace('items/', '');
             schema['x-swagger-schema-flattener'] = {
@@ -70,6 +70,9 @@ exports.getFlattenedSchemaFromParameters = function (params) {
             }
             if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                 schema.example = '';
+            }
+            if (!schema.description) {
+                schema.description = '';
             }
             flattenedParams.push(schema);
         });
@@ -101,7 +104,7 @@ exports.getFlattenedSchemaFromRequestBody = function (requestBody, contentType) 
             displayKey = parent['x-swagger-schema-flattener'].displayPath;
         }
         var newRealKey = buildRealKey(realKey, state.property);
-        var newDisplayKey = buildNewKey(displayKey, state.property)
+        var newDisplayKey = utils_1.buildNewKey(displayKey, state.property)
             .replace('properties/', '')
             .replace('items/', '');
         schema['x-swagger-schema-flattener'] = {
@@ -153,6 +156,9 @@ exports.getFlattenedSchemaFromResponses = function (responses, contentType) {
                     topLevelProps = lodash_es_1.cloneDeep(lodash_es_1.omit(parent, ['content']));
                     realKey = "responses['" + responseKey + "'].content['" + contentType + "'].schema";
                     displayKey = responseKey;
+                    if (!topLevelProps.description) {
+                        topLevelProps.description = '';
+                    }
                 }
                 else {
                     topLevelProps = {};
@@ -160,7 +166,7 @@ exports.getFlattenedSchemaFromResponses = function (responses, contentType) {
                     displayKey = parent['x-swagger-schema-flattener'].displayPath;
                 }
                 var newRealKey = buildRealKey(realKey, state.property);
-                var newDisplayKey = buildNewKey(displayKey, state.property)
+                var newDisplayKey = utils_1.buildNewKey(displayKey, state.property)
                     .replace('properties/', '')
                     .replace('items/', '');
                 schema['x-swagger-schema-flattener'] = {
@@ -180,6 +186,9 @@ exports.getFlattenedSchemaFromResponses = function (responses, contentType) {
                 }
                 if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                     schema.example = '';
+                }
+                if (!schema.description) {
+                    schema.description = '';
                 }
                 currentDepth = state.depth;
                 flattenedResponses.push(schema);

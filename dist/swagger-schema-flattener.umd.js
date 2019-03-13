@@ -18028,6 +18028,7 @@
   var buildNewKey = function (oldKey, newProperty) {
       return (oldKey += typeof newProperty === 'undefined' ? '' : "." + newProperty);
   };
+
   var buildRealKey = function (key, newProperty) {
       return buildNewKey(key, newProperty)
           .replace('properties/', 'properties.')
@@ -18057,6 +18058,9 @@
                   topLevelProps = cloneDeep(omit(parent, ['schema']));
                   if (!topLevelProps.example) {
                       topLevelProps.example = '';
+                  }
+                  if (!topLevelProps.description) {
+                      topLevelProps.description = '';
                   }
                   realKey = "parameters[" + topLevelIndex + "].schema";
                   displayKey = parent.name;
@@ -18092,6 +18096,9 @@
               }
               if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                   schema.example = '';
+              }
+              if (!schema.description) {
+                  schema.description = '';
               }
               flattenedParams.push(schema);
           });
@@ -18175,6 +18182,9 @@
                       topLevelProps = cloneDeep(omit(parent, ['content']));
                       realKey = "responses['" + responseKey + "'].content['" + contentType + "'].schema";
                       displayKey = responseKey;
+                      if (!topLevelProps.description) {
+                          topLevelProps.description = '';
+                      }
                   }
                   else {
                       topLevelProps = {};
@@ -18202,6 +18212,9 @@
                   }
                   if (!schema.example && !(schema.type === 'object' || schema.type === 'array')) {
                       schema.example = '';
+                  }
+                  if (!schema.description) {
+                      schema.description = '';
                   }
                   currentDepth = state.depth;
                   flattenedResponses.push(schema);
@@ -18235,11 +18248,19 @@
       var wsState = getDefaultState();
       wsState.combine = true;
       var formattedRequestBody = { requestBody: null };
+      var displayKey = '';
       walkSchema(requestBody.content[contentType].schema, requestBody, wsState, function (schema, parent, state) {
           if (parent.content && parent.content[contentType].schema) {
-              set(formattedRequestBody, 'requestBody', minimalSchema(parent));
+              displayKey = 'requestBody';
+              set(formattedRequestBody, displayKey, minimalSchema(parent));
           }
           else {
+              var newDisplayKey = buildNewKey(displayKey, state.property)
+                  .replace('properties/', '')
+                  .replace('items/', '');
+              schema['x-swagger-schema-flattener'] = {
+                  displayPath: newDisplayKey
+              };
               set(formattedRequestBody, schema['x-swagger-schema-flattener'].displayPath, minimalSchema(schema));
           }
       });
@@ -18253,12 +18274,20 @@
       wsState.combine = true;
       return Object.keys(responses).map(function (responseKey) {
           var formattedResponse = {};
+          var displayKey = '';
           if (responses[responseKey].content) {
               walkSchema(responses[responseKey].content[contentType].schema, responses[responseKey], wsState, function (schema, parent, state) {
                   if (parent.content && parent.content[contentType].schema) {
-                      set(formattedResponse, responseKey, minimalSchema(parent));
+                      displayKey = responseKey;
+                      set(formattedResponse, displayKey, minimalSchema(parent));
                   }
                   else {
+                      var newDisplayKey = buildNewKey(displayKey, state.property)
+                          .replace('properties/', '')
+                          .replace('items/', '');
+                      schema['x-swagger-schema-flattener'] = {
+                          displayPath: newDisplayKey
+                      };
                       set(formattedResponse, schema['x-swagger-schema-flattener'].displayPath, minimalSchema(schema));
                   }
               });
