@@ -3,7 +3,18 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var walker_1 = require("./walker");
 var lodash_es_1 = require("lodash-es");
 var utils_1 = require("./utils");
-var minimalSchema = function (schema) {
+var minimalSchema = function (schema, options) {
+    if (options === void 0) { options = {
+        contentType: 'application/json',
+        overrideContentDescription: false
+    }; }
+    // Get the deeper description key if it has it
+    if (options.overrideContentDescription &&
+        schema.content &&
+        schema.content[options.contentType].schema &&
+        schema.content[options.contentType].schema.description) {
+        schema.description = schema.content[options.contentType].schema.description;
+    }
     var newSchema = lodash_es_1.omit(schema, ['properties', 'items', 'content', 'x-swagger-schema-flattener']);
     if (newSchema.enum) {
         newSchema.enum = newSchema.enum.join(', ');
@@ -64,15 +75,15 @@ exports.getFormattedResponseSchema = function (responses, contentType) {
                     displayPath: newDisplayKey
                 };
                 if (parent.content && parent.content[contentType].schema) {
-                    lodash_es_1.set(formattedResponse, newDisplayKey, minimalSchema(parent));
+                    lodash_es_1.set(formattedResponse, newDisplayKey, minimalSchema(parent, { contentType: contentType, overrideContentDescription: true }));
                 }
                 else {
-                    lodash_es_1.set(formattedResponse, newDisplayKey, minimalSchema(schema));
+                    lodash_es_1.set(formattedResponse, newDisplayKey, minimalSchema(schema, { contentType: contentType, overrideContentDescription: true }));
                 }
             });
         }
         else {
-            lodash_es_1.set(formattedResponse, responseKey, minimalSchema(responses[responseKey]));
+            lodash_es_1.set(formattedResponse, responseKey, minimalSchema(responses[responseKey], { contentType: contentType, overrideContentDescription: true }));
         }
         // Reset the state for the next response!
         wsState = walker_1.getDefaultState();

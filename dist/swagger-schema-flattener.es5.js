@@ -18207,7 +18207,18 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
     return flattenedResponses;
 };
 
-var minimalSchema = function (schema) {
+var minimalSchema = function (schema, options) {
+    if (options === void 0) { options = {
+        contentType: 'application/json',
+        overrideContentDescription: false
+    }; }
+    // Get the deeper description key if it has it
+    if (options.overrideContentDescription &&
+        schema.content &&
+        schema.content[options.contentType].schema &&
+        schema.content[options.contentType].schema.description) {
+        schema.description = schema.content[options.contentType].schema.description;
+    }
     var newSchema = omit(schema, ['properties', 'items', 'content', 'x-swagger-schema-flattener']);
     if (newSchema.enum) {
         newSchema.enum = newSchema.enum.join(', ');
@@ -18268,15 +18279,15 @@ var getFormattedResponseSchema = function (responses, contentType) {
                     displayPath: newDisplayKey
                 };
                 if (parent.content && parent.content[contentType].schema) {
-                    set(formattedResponse, newDisplayKey, minimalSchema(parent));
+                    set(formattedResponse, newDisplayKey, minimalSchema(parent, { contentType: contentType, overrideContentDescription: true }));
                 }
                 else {
-                    set(formattedResponse, newDisplayKey, minimalSchema(schema));
+                    set(formattedResponse, newDisplayKey, minimalSchema(schema, { contentType: contentType, overrideContentDescription: true }));
                 }
             });
         }
         else {
-            set(formattedResponse, responseKey, minimalSchema(responses[responseKey]));
+            set(formattedResponse, responseKey, minimalSchema(responses[responseKey], { contentType: contentType, overrideContentDescription: true }));
         }
         // Reset the state for the next response!
         wsState = getDefaultState();

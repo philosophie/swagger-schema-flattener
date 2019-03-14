@@ -11,7 +11,28 @@ import { set, omit } from 'lodash-es'
 import { WalkerState } from './interfaces'
 import { buildNewKey } from './utils'
 
-const minimalSchema = (schema: SchemaObject | ParameterObject) => {
+interface MinimalSchemaOptions {
+  contentType: string
+  overrideContentDescription: boolean
+}
+
+const minimalSchema = (
+  schema: SchemaObject | ParameterObject,
+  options: MinimalSchemaOptions = {
+    contentType: 'application/json',
+    overrideContentDescription: false
+  }
+) => {
+  // Get the deeper description key if it has it
+  if (
+    options.overrideContentDescription &&
+    schema.content &&
+    schema.content[options.contentType].schema &&
+    schema.content[options.contentType].schema.description
+  ) {
+    schema.description = schema.content[options.contentType].schema.description
+  }
+
   const newSchema = omit(schema, ['properties', 'items', 'content', 'x-swagger-schema-flattener'])
 
   if (newSchema.enum) {
@@ -97,14 +118,26 @@ export const getFormattedResponseSchema = (responses: ResponsesObject, contentTy
           }
 
           if (parent.content && parent.content[contentType].schema) {
-            set(formattedResponse, newDisplayKey, minimalSchema(parent))
+            set(
+              formattedResponse,
+              newDisplayKey,
+              minimalSchema(parent, { contentType, overrideContentDescription: true })
+            )
           } else {
-            set(formattedResponse, newDisplayKey, minimalSchema(schema))
+            set(
+              formattedResponse,
+              newDisplayKey,
+              minimalSchema(schema, { contentType, overrideContentDescription: true })
+            )
           }
         }
       )
     } else {
-      set(formattedResponse, responseKey, minimalSchema(responses[responseKey]))
+      set(
+        formattedResponse,
+        responseKey,
+        minimalSchema(responses[responseKey], { contentType, overrideContentDescription: true })
+      )
     }
 
     // Reset the state for the next response!
