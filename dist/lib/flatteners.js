@@ -180,6 +180,9 @@ exports.getFlattenedSchemaFromResponses = function (responses, contentType) {
             responses[responseKey]['x-swagger-schema-flattener'] = extension;
             flattenedResponses.push(responses[responseKey]);
         }
+        // Reset the state for the next response!
+        wsState = walker_1.getDefaultState();
+        wsState.combine;
     });
     return flattenedResponses;
 };

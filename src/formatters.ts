@@ -107,6 +107,9 @@ export const getFormattedResponseSchema = (responses: ResponsesObject, contentTy
       set(formattedResponse, responseKey, minimalSchema(responses[responseKey]))
     }
 
+    // Reset the state for the next response!
+    wsState = getDefaultState() as WalkerState
+    wsState.combine = true
     return formattedResponse
   })
 }

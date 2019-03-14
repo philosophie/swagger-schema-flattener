@@ -242,6 +242,10 @@ export const getFlattenedSchemaFromResponses = (
       responses[responseKey]['x-swagger-schema-flattener'] = extension
       flattenedResponses.push(responses[responseKey])
     }
+
+    // Reset the state for the next response!
+    wsState = getDefaultState() as WalkerState
+    wsState.combine
   })
 
   return flattenedResponses

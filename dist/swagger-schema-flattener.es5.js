@@ -18200,6 +18200,9 @@ var getFlattenedSchemaFromResponses = function (responses, contentType) {
             responses[responseKey]['x-swagger-schema-flattener'] = extension;
             flattenedResponses.push(responses[responseKey]);
         }
+        // Reset the state for the next response!
+        wsState = getDefaultState();
+        wsState.combine;
     });
     return flattenedResponses;
 };
@@ -18275,6 +18278,9 @@ var getFormattedResponseSchema = function (responses, contentType) {
         else {
             set(formattedResponse, responseKey, minimalSchema(responses[responseKey]));
         }
+        // Reset the state for the next response!
+        wsState = getDefaultState();
+        wsState.combine = true;
         return formattedResponse;
     });
 };

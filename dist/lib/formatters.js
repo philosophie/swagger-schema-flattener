@@ -74,6 +74,9 @@ exports.getFormattedResponseSchema = function (responses, contentType) {
         else {
             lodash_es_1.set(formattedResponse, responseKey, minimalSchema(responses[responseKey]));
         }
+        // Reset the state for the next response!
+        wsState = walker_1.getDefaultState();
+        wsState.combine = true;
         return formattedResponse;
     });
 };
