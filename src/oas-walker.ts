@@ -1,24 +1,84 @@
-import { cloneDeep } from 'lodash-es'
+import { SchemaObject } from 'openapi3-ts'
 
-import { WalkerState } from './interfaces'
+import { IOASWalkerConstants } from './constants'
+import { buildRealKey } from './utils'
+import {
+  ISchemaObject,
+  ISpecWalkerMeta,
+  ISpecWalkerOptions,
+  IWalkerState,
+  SchemaWalkerContextType
+} from './interfaces'
 
-/**
- * functions to walk an OpenAPI schema object and traverse all subschemas
- * calling a callback function on each one
- */
+export * from './utils'
+export * from './constants'
+
+export const walk = (schemaObj: SchemaObject, options: ISpecWalkerOptions) => {
+  const schemas = [] as ISpecWalkerMeta[]
+  let firstPathKey = ''
+  let pathKey = ''
+
+  if (options.context.type === SchemaWalkerContextType.requestBody) {
+    firstPathKey = `requestBody.content['${IOASWalkerConstants.CONTENT_TYPE}'].schema`
+  } else if (
+    options.context.type === SchemaWalkerContextType.responses &&
+    options.context.topLevelKey
+  ) {
+    firstPathKey = `responses['${options.context.topLevelKey}'].content['${
+      IOASWalkerConstants.CONTENT_TYPE
+    }'].schema`
+  } else if (
+    options.context.type === SchemaWalkerContextType.parameters &&
+    options.context.topLevelKey
+  ) {
+    firstPathKey = `parameters[${options.context.topLevelKey}].schema`
+  } else {
+    return []
+  }
+
+  walkSchema(schemaObj, {}, getDefaultState(), (schema, parent, walkerState) => {
+    // First set pathKey
+    if (schema[IOASWalkerConstants.X_SCHEMA_WALKER]) {
+      pathKey = schema[IOASWalkerConstants.X_SCHEMA_WALKER].path
+    } else if (Object.keys(parent).length === 0 && walkerState.depth === 0) {
+      pathKey = firstPathKey
+    } else {
+      pathKey = parent[IOASWalkerConstants.X_SCHEMA_WALKER].path
+    }
+
+    const newKey = buildRealKey(pathKey, walkerState.property)
+
+    schema[IOASWalkerConstants.X_SCHEMA_WALKER] = {
+      key: schema.$ref ? IOASWalkerConstants.X_SCHEMA_WALKER_PATH_PREFIX + newKey : newKey,
+      path: newKey
+    }
+
+    const title = walkerState.property
+      ? walkerState.property.replace('properties/', '').replace('items/', '')
+      : ''
+
+    schemas.push({
+      key: schema[IOASWalkerConstants.X_SCHEMA_WALKER].path,
+      schema: schema as ISchemaObject,
+      title
+    })
+  })
+
+  return schemas
+}
 
 /**
  * obtains the default starting state for the `state` object used
  * by walkSchema
  * @return the state object suitable for use in walkSchema
  */
-export function getDefaultState() {
+function getDefaultState(): IWalkerState {
   return {
+    combine: true,
     depth: 0,
     seen: new WeakMap(),
-    top: true,
-    combine: false
-  } as WalkerState
+    top: true
+  }
 }
 
 /**
@@ -29,10 +89,26 @@ export function getDefaultState() {
  * @param callback, a function taking a schema, parent and state to be called on this and all subschemas
  * @return the schema object
  */
-export function walkSchema(schema: any, parent: any, state: WalkerState, callback: any) {
-  if (typeof state.depth === 'undefined') state = getDefaultState()
-  if (schema === null || typeof schema === 'undefined') return schema
-  schema = cloneDeep(schema)
+function walkSchema(
+  schema: SchemaObject,
+  parent: SchemaObject,
+  state: IWalkerState,
+  callback: (schema: SchemaObject, parent: SchemaObject, state: IWalkerState) => void
+) {
+  if (typeof state.depth === 'undefined') {
+    state = getDefaultState()
+  }
+  if (schema === null || typeof schema === 'undefined') {
+    return schema
+  }
+  if (typeof schema.$ref !== 'undefined') {
+    // let temp = { $ref: schema.$ref }
+    // if (state.allowRefSiblings && schema.description) {
+    //   temp.description = schema.description
+    // }
+    callback(schema, parent, state)
+    return schema // all other properties SHALL be ignored
+  }
 
   if (state.combine) {
     if (schema.allOf && Array.isArray(schema.allOf) && schema.allOf.length === 1) {
@@ -53,8 +129,11 @@ export function walkSchema(schema: any, parent: any, state: WalkerState, callbac
   if (state.seen.has(schema)) {
     return schema
   }
-  //else
-  if (typeof schema === 'object' && schema !== null) state.seen.set(schema, true)
+
+  if (typeof schema === 'object' && schema !== null) {
+    state.seen.set(schema, true)
+  }
+
   state.top = false
   state.depth++
 

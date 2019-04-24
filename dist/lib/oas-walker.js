@@ -1,10 +1,58 @@
 "use strict";
+function __export(m) {
+    for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
+}
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_es_1 = require("lodash-es");
-/**
- * functions to walk an OpenAPI schema object and traverse all subschemas
- * calling a callback function on each one
- */
+var constants_1 = require("./constants");
+var utils_1 = require("./utils");
+var interfaces_1 = require("./interfaces");
+__export(require("./utils"));
+__export(require("./constants"));
+exports.walk = function (schemaObj, options) {
+    var schemas = [];
+    var firstPathKey = '';
+    var pathKey = '';
+    if (options.context.type === interfaces_1.SchemaWalkerContextType.requestBody) {
+        firstPathKey = "requestBody.content['" + constants_1.IOASWalkerConstants.CONTENT_TYPE + "'].schema";
+    }
+    else if (options.context.type === interfaces_1.SchemaWalkerContextType.responses &&
+        options.context.topLevelKey) {
+        firstPathKey = "responses['" + options.context.topLevelKey + "'].content['" + constants_1.IOASWalkerConstants.CONTENT_TYPE + "'].schema";
+    }
+    else if (options.context.type === interfaces_1.SchemaWalkerContextType.parameters &&
+        options.context.topLevelKey) {
+        firstPathKey = "parameters[" + options.context.topLevelKey + "].schema";
+    }
+    else {
+        return [];
+    }
+    walkSchema(schemaObj, {}, getDefaultState(), function (schema, parent, walkerState) {
+        // First set pathKey
+        if (schema[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER]) {
+            pathKey = schema[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER].path;
+        }
+        else if (Object.keys(parent).length === 0 && walkerState.depth === 0) {
+            pathKey = firstPathKey;
+        }
+        else {
+            pathKey = parent[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER].path;
+        }
+        var newKey = utils_1.buildRealKey(pathKey, walkerState.property);
+        schema[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER] = {
+            key: schema.$ref ? constants_1.IOASWalkerConstants.X_SCHEMA_WALKER_PATH_PREFIX + newKey : newKey,
+            path: newKey
+        };
+        var title = walkerState.property
+            ? walkerState.property.replace('properties/', '').replace('items/', '')
+            : '';
+        schemas.push({
+            key: schema[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER].path,
+            schema: schema,
+            title: title
+        });
+    });
+    return schemas;
+};
 /**
  * obtains the default starting state for the `state` object used
  * by walkSchema
@@ -12,13 +60,12 @@ var lodash_es_1 = require("lodash-es");
  */
 function getDefaultState() {
     return {
+        combine: true,
         depth: 0,
         seen: new WeakMap(),
-        top: true,
-        combine: false
+        top: true
     };
 }
-exports.getDefaultState = getDefaultState;
 /**
  * begins the walk of a schema object, or the `state` object used
  * by walkSchema
@@ -28,11 +75,20 @@ exports.getDefaultState = getDefaultState;
  * @return the schema object
  */
 function walkSchema(schema, parent, state, callback) {
-    if (typeof state.depth === 'undefined')
+    if (typeof state.depth === 'undefined') {
         state = getDefaultState();
-    if (schema === null || typeof schema === 'undefined')
+    }
+    if (schema === null || typeof schema === 'undefined') {
         return schema;
-    schema = lodash_es_1.cloneDeep(schema);
+    }
+    if (typeof schema.$ref !== 'undefined') {
+        // let temp = { $ref: schema.$ref }
+        // if (state.allowRefSiblings && schema.description) {
+        //   temp.description = schema.description
+        // }
+        callback(schema, parent, state);
+        return schema; // all other properties SHALL be ignored
+    }
     if (state.combine) {
         if (schema.allOf && Array.isArray(schema.allOf) && schema.allOf.length === 1) {
             schema = Object.assign({}, schema.allOf[0], schema);
@@ -51,9 +107,9 @@ function walkSchema(schema, parent, state, callback) {
     if (state.seen.has(schema)) {
         return schema;
     }
-    //else
-    if (typeof schema === 'object' && schema !== null)
+    if (typeof schema === 'object' && schema !== null) {
         state.seen.set(schema, true);
+    }
     state.top = false;
     state.depth++;
     if (typeof schema.items !== 'undefined') {
@@ -114,5 +170,4 @@ function walkSchema(schema, parent, state, callback) {
     state.depth--;
     return schema;
 }
-exports.walkSchema = walkSchema;
-//# sourceMappingURL=walker.js.map
+//# sourceMappingURL=oas-walker.js.map

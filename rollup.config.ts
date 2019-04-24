@@ -7,7 +7,7 @@ import json from 'rollup-plugin-json'
 
 const pkg = require('./package.json')
 
-const libraryName = 'swagger-schema-flattener'
+const libraryName = 'oas-walker'
 
 export default {
   input: `src/${libraryName}.ts`,

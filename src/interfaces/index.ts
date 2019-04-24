@@ -1,2 +1,5 @@
+export * from './constants'
 export * from './walker-state'
-export * from './swagger-schema-flattener-extension'
+export * from './changeset'
+export * from './schema-object'
+export * from './schema-walker'
