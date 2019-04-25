@@ -8,6 +8,8 @@ var utils_1 = require("./utils");
 var interfaces_1 = require("./interfaces");
 __export(require("./utils"));
 __export(require("./constants"));
+__export(require("./interfaces"));
+__export(require("./enums"));
 exports.walk = function (schemaObj, options) {
     var schemas = [];
     var firstPathKey = '';

@@ -12,6 +12,8 @@ import {
 
 export * from './utils'
 export * from './constants'
+export * from './interfaces'
+export * from './enums'
 
 export const walk = (schemaObj: SchemaObject, options: ISpecWalkerOptions) => {
   const schemas = [] as ISpecWalkerMeta[]

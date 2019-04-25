@@ -1653,6 +1653,12 @@ var SchemaWalkerContextType;
     SchemaWalkerContextType["responses"] = "responses";
 })(SchemaWalkerContextType || (SchemaWalkerContextType = {}));
 
+var ChangesetOperation;
+(function (ChangesetOperation) {
+    ChangesetOperation["destroy"] = "destroy";
+    ChangesetOperation["update"] = "update";
+})(ChangesetOperation || (ChangesetOperation = {}));
+
 var walk = function (schemaObj, options) {
     var schemas = [];
     var firstPathKey = '';
@@ -1816,5 +1822,5 @@ function walkSchema(schema, parent, state, callback) {
     return schema;
 }
 
-export { walk, buildNewKey, buildRealKey, getPathFromRef, getSchemaFromRef, isCyclic, getChange, IOASWalkerConstants };
+export { walk, buildNewKey, buildRealKey, getPathFromRef, getSchemaFromRef, isCyclic, getChange, IOASWalkerConstants, SchemaWalkerContextType, ChangesetOperation };
 //# sourceMappingURL=oas-walker.es5.js.map

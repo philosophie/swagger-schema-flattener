@@ -1652,25 +1652,29 @@
       return changeset.find(function (change) { return change.path === path; });
   };
 
-  var SchemaWalkerContextType;
   (function (SchemaWalkerContextType) {
       SchemaWalkerContextType["requestBody"] = "requestBody";
       SchemaWalkerContextType["parameters"] = "parameters";
       SchemaWalkerContextType["responses"] = "responses";
-  })(SchemaWalkerContextType || (SchemaWalkerContextType = {}));
+  })(exports.SchemaWalkerContextType || (exports.SchemaWalkerContextType = {}));
+
+  (function (ChangesetOperation) {
+      ChangesetOperation["destroy"] = "destroy";
+      ChangesetOperation["update"] = "update";
+  })(exports.ChangesetOperation || (exports.ChangesetOperation = {}));
 
   var walk = function (schemaObj, options) {
       var schemas = [];
       var firstPathKey = '';
       var pathKey = '';
-      if (options.context.type === SchemaWalkerContextType.requestBody) {
+      if (options.context.type === exports.SchemaWalkerContextType.requestBody) {
           firstPathKey = "requestBody.content['" + IOASWalkerConstants.CONTENT_TYPE + "'].schema";
       }
-      else if (options.context.type === SchemaWalkerContextType.responses &&
+      else if (options.context.type === exports.SchemaWalkerContextType.responses &&
           options.context.topLevelKey) {
           firstPathKey = "responses['" + options.context.topLevelKey + "'].content['" + IOASWalkerConstants.CONTENT_TYPE + "'].schema";
       }
-      else if (options.context.type === SchemaWalkerContextType.parameters &&
+      else if (options.context.type === exports.SchemaWalkerContextType.parameters &&
           options.context.topLevelKey) {
           firstPathKey = "parameters[" + options.context.topLevelKey + "].schema";
       }
