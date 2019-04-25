@@ -4,7 +4,7 @@
   (factory((global.oasWalker = {})));
 }(this, (function (exports) { 'use strict';
 
-  var IOASWalkerConstants = {
+  var OASWalkerConstants = {
       CONTENT_TYPE: 'application/json',
       EXAMPLE: 'example',
       PARAMETER: 'param',
@@ -1668,11 +1668,11 @@
       var firstPathKey = '';
       var pathKey = '';
       if (options.context.type === exports.SchemaWalkerContextType.requestBody) {
-          firstPathKey = "requestBody.content['" + IOASWalkerConstants.CONTENT_TYPE + "'].schema";
+          firstPathKey = "requestBody.content['" + OASWalkerConstants.CONTENT_TYPE + "'].schema";
       }
       else if (options.context.type === exports.SchemaWalkerContextType.responses &&
           options.context.topLevelKey) {
-          firstPathKey = "responses['" + options.context.topLevelKey + "'].content['" + IOASWalkerConstants.CONTENT_TYPE + "'].schema";
+          firstPathKey = "responses['" + options.context.topLevelKey + "'].content['" + OASWalkerConstants.CONTENT_TYPE + "'].schema";
       }
       else if (options.context.type === exports.SchemaWalkerContextType.parameters &&
           options.context.topLevelKey) {
@@ -1683,25 +1683,25 @@
       }
       walkSchema(schemaObj, {}, getDefaultState(), function (schema, parent, walkerState) {
           // First set pathKey
-          if (schema[IOASWalkerConstants.X_SCHEMA_WALKER]) {
-              pathKey = schema[IOASWalkerConstants.X_SCHEMA_WALKER].path;
+          if (schema[OASWalkerConstants.X_SCHEMA_WALKER]) {
+              pathKey = schema[OASWalkerConstants.X_SCHEMA_WALKER].path;
           }
           else if (Object.keys(parent).length === 0 && walkerState.depth === 0) {
               pathKey = firstPathKey;
           }
           else {
-              pathKey = parent[IOASWalkerConstants.X_SCHEMA_WALKER].path;
+              pathKey = parent[OASWalkerConstants.X_SCHEMA_WALKER].path;
           }
           var newKey = buildRealKey(pathKey, walkerState.property);
-          schema[IOASWalkerConstants.X_SCHEMA_WALKER] = {
-              key: schema.$ref ? IOASWalkerConstants.X_SCHEMA_WALKER_PATH_PREFIX + newKey : newKey,
+          schema[OASWalkerConstants.X_SCHEMA_WALKER] = {
+              key: schema.$ref ? OASWalkerConstants.X_SCHEMA_WALKER_PATH_PREFIX + newKey : newKey,
               path: newKey
           };
           var title = walkerState.property
               ? walkerState.property.replace('properties/', '').replace('items/', '')
               : '';
           schemas.push({
-              key: schema[IOASWalkerConstants.X_SCHEMA_WALKER].path,
+              key: schema[OASWalkerConstants.X_SCHEMA_WALKER].path,
               schema: schema,
               title: title
           });
@@ -1827,13 +1827,13 @@
   }
 
   exports.walk = walk;
+  exports.OASWalkerConstants = OASWalkerConstants;
   exports.buildNewKey = buildNewKey;
   exports.buildRealKey = buildRealKey;
   exports.getPathFromRef = getPathFromRef;
   exports.getSchemaFromRef = getSchemaFromRef;
   exports.isCyclic = isCyclic;
   exports.getChange = getChange;
-  exports.IOASWalkerConstants = IOASWalkerConstants;
 
   Object.defineProperty(exports, '__esModule', { value: true });
 

@@ -1,2 +1,2 @@
 import { IConstants } from './interfaces';
-export declare const IOASWalkerConstants: IConstants;
+export declare const OASWalkerConstants: IConstants;

@@ -6,8 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = require("./constants");
 var utils_1 = require("./utils");
 var interfaces_1 = require("./interfaces");
-__export(require("./utils"));
 __export(require("./constants"));
+__export(require("./utils"));
 __export(require("./interfaces"));
 __export(require("./enums"));
 exports.walk = function (schemaObj, options) {
@@ -15,11 +15,11 @@ exports.walk = function (schemaObj, options) {
     var firstPathKey = '';
     var pathKey = '';
     if (options.context.type === interfaces_1.SchemaWalkerContextType.requestBody) {
-        firstPathKey = "requestBody.content['" + constants_1.IOASWalkerConstants.CONTENT_TYPE + "'].schema";
+        firstPathKey = "requestBody.content['" + constants_1.OASWalkerConstants.CONTENT_TYPE + "'].schema";
     }
     else if (options.context.type === interfaces_1.SchemaWalkerContextType.responses &&
         options.context.topLevelKey) {
-        firstPathKey = "responses['" + options.context.topLevelKey + "'].content['" + constants_1.IOASWalkerConstants.CONTENT_TYPE + "'].schema";
+        firstPathKey = "responses['" + options.context.topLevelKey + "'].content['" + constants_1.OASWalkerConstants.CONTENT_TYPE + "'].schema";
     }
     else if (options.context.type === interfaces_1.SchemaWalkerContextType.parameters &&
         options.context.topLevelKey) {
@@ -30,25 +30,25 @@ exports.walk = function (schemaObj, options) {
     }
     walkSchema(schemaObj, {}, getDefaultState(), function (schema, parent, walkerState) {
         // First set pathKey
-        if (schema[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER]) {
-            pathKey = schema[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER].path;
+        if (schema[constants_1.OASWalkerConstants.X_SCHEMA_WALKER]) {
+            pathKey = schema[constants_1.OASWalkerConstants.X_SCHEMA_WALKER].path;
         }
         else if (Object.keys(parent).length === 0 && walkerState.depth === 0) {
             pathKey = firstPathKey;
         }
         else {
-            pathKey = parent[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER].path;
+            pathKey = parent[constants_1.OASWalkerConstants.X_SCHEMA_WALKER].path;
         }
         var newKey = utils_1.buildRealKey(pathKey, walkerState.property);
-        schema[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER] = {
-            key: schema.$ref ? constants_1.IOASWalkerConstants.X_SCHEMA_WALKER_PATH_PREFIX + newKey : newKey,
+        schema[constants_1.OASWalkerConstants.X_SCHEMA_WALKER] = {
+            key: schema.$ref ? constants_1.OASWalkerConstants.X_SCHEMA_WALKER_PATH_PREFIX + newKey : newKey,
             path: newKey
         };
         var title = walkerState.property
             ? walkerState.property.replace('properties/', '').replace('items/', '')
             : '';
         schemas.push({
-            key: schema[constants_1.IOASWalkerConstants.X_SCHEMA_WALKER].path,
+            key: schema[constants_1.OASWalkerConstants.X_SCHEMA_WALKER].path,
             schema: schema,
             title: title
         });

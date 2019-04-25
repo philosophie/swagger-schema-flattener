@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.IOASWalkerConstants = {
+exports.OASWalkerConstants = {
     CONTENT_TYPE: 'application/json',
     EXAMPLE: 'example',
     PARAMETER: 'param',

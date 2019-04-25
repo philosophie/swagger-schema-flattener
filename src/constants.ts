@@ -1,6 +1,6 @@
 import { IConstants } from './interfaces'
 
-export const IOASWalkerConstants = {
+export const OASWalkerConstants = {
   CONTENT_TYPE: 'application/json',
   EXAMPLE: 'example',
   PARAMETER: 'param',

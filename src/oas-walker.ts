@@ -1,6 +1,6 @@
 import { SchemaObject } from 'openapi3-ts'
 
-import { IOASWalkerConstants } from './constants'
+import { OASWalkerConstants } from './constants'
 import { buildRealKey } from './utils'
 import {
   ISchemaObject,
@@ -10,8 +10,8 @@ import {
   SchemaWalkerContextType
 } from './interfaces'
 
-export * from './utils'
 export * from './constants'
+export * from './utils'
 export * from './interfaces'
 export * from './enums'
 
@@ -21,13 +21,13 @@ export const walk = (schemaObj: SchemaObject, options: ISpecWalkerOptions) => {
   let pathKey = ''
 
   if (options.context.type === SchemaWalkerContextType.requestBody) {
-    firstPathKey = `requestBody.content['${IOASWalkerConstants.CONTENT_TYPE}'].schema`
+    firstPathKey = `requestBody.content['${OASWalkerConstants.CONTENT_TYPE}'].schema`
   } else if (
     options.context.type === SchemaWalkerContextType.responses &&
     options.context.topLevelKey
   ) {
     firstPathKey = `responses['${options.context.topLevelKey}'].content['${
-      IOASWalkerConstants.CONTENT_TYPE
+      OASWalkerConstants.CONTENT_TYPE
     }'].schema`
   } else if (
     options.context.type === SchemaWalkerContextType.parameters &&
@@ -40,18 +40,18 @@ export const walk = (schemaObj: SchemaObject, options: ISpecWalkerOptions) => {
 
   walkSchema(schemaObj, {}, getDefaultState(), (schema, parent, walkerState) => {
     // First set pathKey
-    if (schema[IOASWalkerConstants.X_SCHEMA_WALKER]) {
-      pathKey = schema[IOASWalkerConstants.X_SCHEMA_WALKER].path
+    if (schema[OASWalkerConstants.X_SCHEMA_WALKER]) {
+      pathKey = schema[OASWalkerConstants.X_SCHEMA_WALKER].path
     } else if (Object.keys(parent).length === 0 && walkerState.depth === 0) {
       pathKey = firstPathKey
     } else {
-      pathKey = parent[IOASWalkerConstants.X_SCHEMA_WALKER].path
+      pathKey = parent[OASWalkerConstants.X_SCHEMA_WALKER].path
     }
 
     const newKey = buildRealKey(pathKey, walkerState.property)
 
-    schema[IOASWalkerConstants.X_SCHEMA_WALKER] = {
-      key: schema.$ref ? IOASWalkerConstants.X_SCHEMA_WALKER_PATH_PREFIX + newKey : newKey,
+    schema[OASWalkerConstants.X_SCHEMA_WALKER] = {
+      key: schema.$ref ? OASWalkerConstants.X_SCHEMA_WALKER_PATH_PREFIX + newKey : newKey,
       path: newKey
     }
 
@@ -60,7 +60,7 @@ export const walk = (schemaObj: SchemaObject, options: ISpecWalkerOptions) => {
       : ''
 
     schemas.push({
-      key: schema[IOASWalkerConstants.X_SCHEMA_WALKER].path,
+      key: schema[OASWalkerConstants.X_SCHEMA_WALKER].path,
       schema: schema as ISchemaObject,
       title
     })
