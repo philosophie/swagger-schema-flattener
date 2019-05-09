@@ -1,5 +1,5 @@
 import { SchemaObject } from 'openapi3-ts';
-export interface WalkerState {
+export interface IWalkerState {
     depth: number;
     seen: WeakMap<SchemaObject, boolean>;
     top: boolean;

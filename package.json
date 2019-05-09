@@ -1,11 +1,11 @@
 {
-  "name": "swagger-schema-flattener",
+  "name": "oas-walker",
   "version": "0.0.0",
   "description": "",
   "keywords": [],
-  "main": "dist/swagger-schema-flattener.umd.js",
-  "module": "dist/swagger-schema-flattener.es5.js",
-  "typings": "dist/types/swagger-schema-flattener.d.ts",
+  "main": "dist/oas-walker.umd.js",
+  "module": "dist/oas-walker.es5.js",
+  "typings": "dist/types/oas-walker.d.ts",
   "files": [
     "dist"
   ],
