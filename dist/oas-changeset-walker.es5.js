@@ -1,4 +1,10 @@
 var OASWalkerConstants = {
+    API_SPECS: [
+        {
+            id: 'payments-orchestrator',
+            url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/orchestrator-api.yaml'
+        }
+    ],
     CONTENT_TYPE: 'application/json',
     EXAMPLE: 'example',
     PARAMETER: 'param',
@@ -1823,4 +1829,4 @@ function walkSchema(schema, parent, state, callback) {
 }
 
 export { walk, OASWalkerConstants, buildNewKey, buildRealKey, getPathFromRef, getSchemaFromRef, isCyclic, getChange, SchemaWalkerContextType, ChangesetOperation };
-//# sourceMappingURL=oas-walker.es5.js.map
+//# sourceMappingURL=oas-changeset-walker.es5.js.map

@@ -172,4 +172,4 @@ function walkSchema(schema, parent, state, callback) {
     state.depth--;
     return schema;
 }
-//# sourceMappingURL=oas-walker.js.map
+//# sourceMappingURL=oas-changeset-walker.js.map
