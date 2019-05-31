@@ -1,10 +1,24 @@
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
-  (factory((global.oasWalker = {})));
+  (factory((global.oasChangesetWalker = {})));
 }(this, (function (exports) { 'use strict';
 
   var OASWalkerConstants = {
+      API_SPECS: [
+          {
+              id: 'payments-orchestrator',
+              url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/orchestrator-api.yaml'
+          },
+          {
+              id: 'payouts-composite',
+              url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/payouts-composite.yaml'
+          },
+          {
+              id: 'so-v2',
+              url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/so-v2.yaml'
+          }
+      ],
       CONTENT_TYPE: 'application/json',
       EXAMPLE: 'example',
       PARAMETER: 'param',
@@ -1838,4 +1852,4 @@
   Object.defineProperty(exports, '__esModule', { value: true });
 
 })));
-//# sourceMappingURL=oas-walker.umd.js.map
+//# sourceMappingURL=oas-changeset-walker.umd.js.map

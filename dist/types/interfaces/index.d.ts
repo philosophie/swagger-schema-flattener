@@ -1,4 +1,5 @@
 export * from './constants';
+export * from './remote-schema';
 export * from './walker-state';
 export * from './changeset';
 export * from './schema-object';
