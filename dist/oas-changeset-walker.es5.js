@@ -11,6 +11,10 @@ var OASWalkerConstants = {
         {
             id: 'so-v2',
             url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/so-v2.yaml'
+        },
+        {
+            id: 'disputes-composite',
+            url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/disputes-composite.yaml'
         }
     ],
     CONTENT_TYPE: 'application/json',
