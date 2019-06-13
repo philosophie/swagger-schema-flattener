@@ -11,7 +11,22 @@ exports.buildNewKey = function (oldKey, newProperty) {
 exports.buildRealKey = function (key, newProperty) {
     return exports.buildNewKey(key, newProperty)
         .replace('properties/', 'properties.')
-        .replace('items/', 'items.');
+        .replace('items/', 'items.')
+        .replace('allOf/', 'allOf')
+        .replace('anyOf/', 'anyOf')
+        .replace('oneOf/', 'oneOf');
+};
+var endsWith = function (checkString, matcher) {
+    if (checkString) {
+        var lastPart = checkString.split('.').pop();
+        if (lastPart) {
+            return lastPart.includes(matcher);
+        }
+    }
+    return false;
+};
+exports.getFirstContentTypeFromContent = function (contentObj) {
+    return Object.keys(contentObj)[0];
 };
 exports.getPathFromRef = function ($ref) {
     if ($ref.includes('#')) {

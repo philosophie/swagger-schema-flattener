@@ -56,7 +56,12 @@ export const walk = (schemaObj: SchemaObject, options: ISpecWalkerOptions) => {
     }
 
     const title = walkerState.property
-      ? walkerState.property.replace('properties/', '').replace('items/', '')
+      ? walkerState.property
+          .replace('properties/', '')
+          .replace('items/', '')
+          .replace('allOf/', '')
+          .replace('anyOf/', '')
+          .replace('oneOf/', '')
       : ''
 
     schemas.push({
@@ -172,21 +177,21 @@ function walkSchema(
   if (schema.allOf) {
     for (let index in schema.allOf) {
       let subSchema = schema.allOf[index]
-      state.property = 'allOf/' + index
+      state.property = 'allOf/' + '[' + index + ']'
       walkSchema(subSchema, schema, state, callback)
     }
   }
   if (schema.anyOf) {
     for (let index in schema.anyOf) {
       let subSchema = schema.anyOf[index]
-      state.property = 'anyOf/' + index
+      state.property = 'anyOf/' + '[' + index + ']'
       walkSchema(subSchema, schema, state, callback)
     }
   }
   if (schema.oneOf) {
     for (let index in schema.oneOf) {
       let subSchema = schema.oneOf[index]
-      state.property = 'oneOf/' + index
+      state.property = 'oneOf/' + '[' + index + ']'
       walkSchema(subSchema, schema, state, callback)
     }
   }

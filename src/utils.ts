@@ -1,5 +1,5 @@
 import at from 'lodash/at'
-import { OpenAPIObject } from 'openapi3-ts'
+import { OpenAPIObject, ContentObject } from 'openapi3-ts'
 
 import { IChangeset } from './interfaces'
 
@@ -12,6 +12,23 @@ export const buildRealKey = (key: string, newProperty: string | undefined) =>
   buildNewKey(key, newProperty)
     .replace('properties/', 'properties.')
     .replace('items/', 'items.')
+    .replace('allOf/', 'allOf')
+    .replace('anyOf/', 'anyOf')
+    .replace('oneOf/', 'oneOf')
+
+const endsWith = (checkString: string, matcher: string) => {
+  if (checkString) {
+    const lastPart = checkString.split('.').pop()
+    if (lastPart) {
+      return lastPart.includes(matcher)
+    }
+  }
+  return false
+}
+
+export const getFirstContentTypeFromContent = (contentObj: ContentObject): string => {
+  return Object.keys(contentObj)[0]
+}
 
 export const getPathFromRef = ($ref: string) => {
   if ($ref.includes('#')) {

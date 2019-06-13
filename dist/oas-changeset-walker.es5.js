@@ -1607,7 +1607,13 @@ var buildNewKey = function (oldKey, newProperty) {
 var buildRealKey = function (key, newProperty) {
     return buildNewKey(key, newProperty)
         .replace('properties/', 'properties.')
-        .replace('items/', 'items.');
+        .replace('items/', 'items.')
+        .replace('allOf/', 'allOf')
+        .replace('anyOf/', 'anyOf')
+        .replace('oneOf/', 'oneOf');
+};
+var getFirstContentTypeFromContent = function (contentObj) {
+    return Object.keys(contentObj)[0];
 };
 var getPathFromRef = function ($ref) {
     if ($ref.includes('#')) {
@@ -1712,7 +1718,12 @@ var walk = function (schemaObj, options) {
             path: newKey
         };
         var title = walkerState.property
-            ? walkerState.property.replace('properties/', '').replace('items/', '')
+            ? walkerState.property
+                .replace('properties/', '')
+                .replace('items/', '')
+                .replace('allOf/', '')
+                .replace('anyOf/', '')
+                .replace('oneOf/', '')
             : '';
         schemas.push({
             key: schema[OASWalkerConstants.X_SCHEMA_WALKER].path,
@@ -1814,21 +1825,21 @@ function walkSchema(schema, parent, state, callback) {
     if (schema.allOf) {
         for (var index in schema.allOf) {
             var subSchema = schema.allOf[index];
-            state.property = 'allOf/' + index;
+            state.property = 'allOf/' + '[' + index + ']';
             walkSchema(subSchema, schema, state, callback);
         }
     }
     if (schema.anyOf) {
         for (var index in schema.anyOf) {
             var subSchema = schema.anyOf[index];
-            state.property = 'anyOf/' + index;
+            state.property = 'anyOf/' + '[' + index + ']';
             walkSchema(subSchema, schema, state, callback);
         }
     }
     if (schema.oneOf) {
         for (var index in schema.oneOf) {
             var subSchema = schema.oneOf[index];
-            state.property = 'oneOf/' + index;
+            state.property = 'oneOf/' + '[' + index + ']';
             walkSchema(subSchema, schema, state, callback);
         }
     }
@@ -1840,5 +1851,5 @@ function walkSchema(schema, parent, state, callback) {
     return schema;
 }
 
-export { walk, OASWalkerConstants, buildNewKey, buildRealKey, getPathFromRef, getSchemaFromRef, isCyclic, getChange, SchemaWalkerContextType, ChangesetOperation };
+export { walk, OASWalkerConstants, buildNewKey, buildRealKey, getFirstContentTypeFromContent, getPathFromRef, getSchemaFromRef, isCyclic, getChange, SchemaWalkerContextType, ChangesetOperation };
 //# sourceMappingURL=oas-changeset-walker.es5.js.map

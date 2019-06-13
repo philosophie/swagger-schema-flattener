@@ -45,7 +45,12 @@ exports.walk = function (schemaObj, options) {
             path: newKey
         };
         var title = walkerState.property
-            ? walkerState.property.replace('properties/', '').replace('items/', '')
+            ? walkerState.property
+                .replace('properties/', '')
+                .replace('items/', '')
+                .replace('allOf/', '')
+                .replace('anyOf/', '')
+                .replace('oneOf/', '')
             : '';
         schemas.push({
             key: schema[constants_1.OASWalkerConstants.X_SCHEMA_WALKER].path,
@@ -147,21 +152,21 @@ function walkSchema(schema, parent, state, callback) {
     if (schema.allOf) {
         for (var index in schema.allOf) {
             var subSchema = schema.allOf[index];
-            state.property = 'allOf/' + index;
+            state.property = 'allOf/' + '[' + index + ']';
             walkSchema(subSchema, schema, state, callback);
         }
     }
     if (schema.anyOf) {
         for (var index in schema.anyOf) {
             var subSchema = schema.anyOf[index];
-            state.property = 'anyOf/' + index;
+            state.property = 'anyOf/' + '[' + index + ']';
             walkSchema(subSchema, schema, state, callback);
         }
     }
     if (schema.oneOf) {
         for (var index in schema.oneOf) {
             var subSchema = schema.oneOf[index];
-            state.property = 'oneOf/' + index;
+            state.property = 'oneOf/' + '[' + index + ']';
             walkSchema(subSchema, schema, state, callback);
         }
     }

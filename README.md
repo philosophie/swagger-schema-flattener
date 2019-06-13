@@ -1,21 +1,4 @@
-Tiny package to help deal with parsing dereferenced Swagger 2.0 parameter objects into easier formats. Currently **only** tested with specs that are dereferenced by [`swagger-parser`](https://github.com/APIDevTools/swagger-parser).
-
-## Features:
-
-- `flattenParamSchema`: Converts a parameter schema to an flattened array of valid parameter objects. Includes a stringified object path inside each param using the `x-swagger-schema-flattener` key.
-
-## Usage
-
-```js
-import SwaggerParser from 'swagger-parser'
-import flattenParamSchema from 'swagger-schema-flattener'
-
-SwaggerParser.dereference('https://petstore.swagger.io/v2/swagger.json').then(spec => {
-  const path = Object.entries(spec.paths)[0]
-  const method = Object.entries(method)[0]
-  console.log(flattenParamSchema(method.parameters))
-})
-```
+Package to help walk through Openapi 3.0 specs. This package is a dependency to Yapstone's Devportal & Flavorizer projects.
 
 ## Development
 
@@ -31,6 +14,8 @@ SwaggerParser.dereference('https://petstore.swagger.io/v2/swagger.json').then(sp
 
 - Runs `prettier` in watch mode, which automatically formats your code.
 
-## TODO
+Note: If you have issues with `yarn link` use `npm link` where you're importing this package.
 
-[ ] Support Openapi 3.0 spec (`requestBody`)
+#### Deployment
+
+Make sure to run `npm run build` before pushing to the `master` branch.
