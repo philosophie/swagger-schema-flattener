@@ -15,20 +15,18 @@ export * from './utils'
 export * from './interfaces'
 export * from './enums'
 
-export const walk = (schemaObj: SchemaObject, options: ISpecWalkerOptions) => {
+export const walk = (schemaObj: SchemaObject, contentType: string, options: ISpecWalkerOptions) => {
   const schemas = [] as ISpecWalkerMeta[]
   let firstPathKey = ''
   let pathKey = ''
 
   if (options.context.type === SchemaWalkerContextType.requestBody) {
-    firstPathKey = `requestBody.content['${OASWalkerConstants.CONTENT_TYPE}'].schema`
+    firstPathKey = `requestBody.content['${contentType}'].schema`
   } else if (
     options.context.type === SchemaWalkerContextType.responses &&
     options.context.topLevelKey
   ) {
-    firstPathKey = `responses['${options.context.topLevelKey}'].content['${
-      OASWalkerConstants.CONTENT_TYPE
-    }'].schema`
+    firstPathKey = `responses['${options.context.topLevelKey}'].content['${contentType}'].schema`
   } else if (
     options.context.type === SchemaWalkerContextType.parameters &&
     options.context.topLevelKey

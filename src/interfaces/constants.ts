@@ -2,7 +2,6 @@ import { IRemoteSchema } from './remote-schema'
 
 export interface IConstants {
   readonly API_SPECS: IRemoteSchema[]
-  readonly CONTENT_TYPE: string
   readonly PARAMETER: string
   readonly RESPONSE: string
   readonly REQUEST_BODY_PARAM: string

@@ -1,4 +1,5 @@
 import at from 'lodash/at'
+import cloneDeep from 'lodash/cloneDeep'
 import { OpenAPIObject, ContentObject } from 'openapi3-ts'
 
 import { IChangeset } from './interfaces'
@@ -44,7 +45,7 @@ export const getPathFromRef = ($ref: string) => {
 export const getSchemaFromRef = ($ref: string, schema: OpenAPIObject) => {
   const refPath = getPathFromRef($ref)
   if (refPath) {
-    return at(schema, [refPath])[0]
+    return cloneDeep(at(schema, [refPath])[0])
   }
 }
 

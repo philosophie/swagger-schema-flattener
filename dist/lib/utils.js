@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var at_1 = __importDefault(require("lodash/at"));
+var cloneDeep_1 = __importDefault(require("lodash/cloneDeep"));
 // We get back undefined from oas-schema-walker, so need to deal with that
 exports.buildNewKey = function (oldKey, newProperty) {
     return (oldKey += typeof newProperty === 'undefined' ? '' : "." + newProperty);
@@ -40,7 +41,7 @@ exports.getPathFromRef = function ($ref) {
 exports.getSchemaFromRef = function ($ref, schema) {
     var refPath = exports.getPathFromRef($ref);
     if (refPath) {
-        return at_1.default(schema, [refPath])[0];
+        return cloneDeep_1.default(at_1.default(schema, [refPath])[0]);
     }
 };
 exports.isCyclic = function (object) {

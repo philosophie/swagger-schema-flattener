@@ -4,4 +4,4 @@ export * from './constants';
 export * from './utils';
 export * from './interfaces';
 export * from './enums';
-export declare const walk: (schemaObj: SchemaObject, options: ISpecWalkerOptions) => ISpecWalkerMeta[];
+export declare const walk: (schemaObj: SchemaObject, contentType: string, options: ISpecWalkerOptions) => ISpecWalkerMeta[];

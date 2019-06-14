@@ -10,16 +10,16 @@ __export(require("./constants"));
 __export(require("./utils"));
 __export(require("./interfaces"));
 __export(require("./enums"));
-exports.walk = function (schemaObj, options) {
+exports.walk = function (schemaObj, contentType, options) {
     var schemas = [];
     var firstPathKey = '';
     var pathKey = '';
     if (options.context.type === interfaces_1.SchemaWalkerContextType.requestBody) {
-        firstPathKey = "requestBody.content['" + constants_1.OASWalkerConstants.CONTENT_TYPE + "'].schema";
+        firstPathKey = "requestBody.content['" + contentType + "'].schema";
     }
     else if (options.context.type === interfaces_1.SchemaWalkerContextType.responses &&
         options.context.topLevelKey) {
-        firstPathKey = "responses['" + options.context.topLevelKey + "'].content['" + constants_1.OASWalkerConstants.CONTENT_TYPE + "'].schema";
+        firstPathKey = "responses['" + options.context.topLevelKey + "'].content['" + contentType + "'].schema";
     }
     else if (options.context.type === interfaces_1.SchemaWalkerContextType.parameters &&
         options.context.topLevelKey) {

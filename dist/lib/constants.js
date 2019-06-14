@@ -19,7 +19,6 @@ exports.OASWalkerConstants = {
             url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/disputes-composite.yaml'
         }
     ],
-    CONTENT_TYPE: 'application/json',
     EXAMPLE: 'example',
     PARAMETER: 'param',
     REQUEST_BODY_PARAM: 'requestBodyParam',
