@@ -8,6 +8,11 @@ export const OASWalkerConstants = {
         'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/orchestrator-api.yaml'
     },
     {
+      id: 'payouts-orchestrator',
+      url:
+        'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/payouts-orchestrator.yaml'
+    },
+    {
       id: 'payouts-composite',
       url:
         'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/payouts-composite.yaml'
