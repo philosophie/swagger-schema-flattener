@@ -25,6 +25,11 @@ export const OASWalkerConstants = {
       id: 'disputes-composite',
       url:
         'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/disputes-composite.yaml'
+    },
+    {
+      id: 'offerings-composite',
+      url:
+        'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/offering-composite.yaml'
     }
   ],
   EXAMPLE: 'example',
