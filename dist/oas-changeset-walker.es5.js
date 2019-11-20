@@ -2,27 +2,27 @@ var OASWalkerConstants = {
     API_SPECS: [
         {
             id: 'payments-orchestrator',
-            url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/orchestrator-api.yaml'
+            url: 'https://ys-devportal-specs.s3-us-west-2.amazonaws.com/orchestrator-api.yaml'
         },
         {
             id: 'payouts-orchestrator',
-            url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/payouts-orchestrator.yaml'
+            url: 'https://ys-devportal-specs.s3-us-west-2.amazonaws.com/payouts-orchestrator.yaml'
         },
         {
             id: 'payouts-composite',
-            url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/payouts-composite.yaml'
+            url: 'https://ys-devportal-specs.s3-us-west-2.amazonaws.com/payouts-composite.yaml'
         },
         {
             id: 'so-v2',
-            url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/so-v2.yaml'
+            url: 'https://ys-devportal-specs.s3-us-west-2.amazonaws.com/so-v2.yaml'
         },
         {
             id: 'disputes-composite',
-            url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/disputes-composite.yaml'
+            url: 'https://ys-devportal-specs.s3-us-west-2.amazonaws.com/disputes-composite.yaml'
         },
         {
             id: 'offerings-composite',
-            url: 'https://s3-us-west-2.amazonaws.com/yapstone-devportal-flavorizer-dev/specs/offering-composite.yaml'
+            url: 'https://ys-devportal-specs.s3-us-west-2.amazonaws.com/offering-composite.yaml'
         }
     ],
     EXAMPLE: 'example',
